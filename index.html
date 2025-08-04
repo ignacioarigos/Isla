@@ -95,41 +95,14 @@
     let currentMonth = 0;
     const year = 2025;
 
-    const turnos = {
-      // Semana comunes enero–febrero
-      "2025-01-02": "Enrique",
-      "2025-01-09": "Ramon",
-      "2025-01-16": "Eugenia",
-      "2025-01-23": "Malvina",
-      "2025-01-30": "Enrique",
-      "2025-02-06": "Ramon",
-      "2025-02-13": "Eugenia",
-      "2025-02-20": "Malvina",
-      "2025-02-27": "Enrique",
-      // Fines largos y especiales
-      "2025-03-06": "Ramon",
-      "2025-03-20": "Eugenia",
-      "2025-03-27": "Malvina",
-      "2025-04-10": "Enrique",
-      "2025-04-17": "Ramon",
-      "2025-04-24": "Eugenia",
-      "2025-05-08": "Malvina",
-      "2025-05-15": "Enrique",
-      "2025-05-22": "Ramon",
-      "2025-06-05": "Eugenia",
-      "2025-06-19": "Malvina",
-      // Julio completo
-      "2025-07-03": "Malvina",
-      "2025-07-10": "Enrique",
-      "2025-07-17": "Ramon",
-      "2025-07-24": "Eugenia",
-      "2025-07-31": "Malvina",
-      // Agosto
-      "2025-08-07": "Enrique",
-      "2025-08-14": "Ramon",
-      "2025-08-21": "Eugenia",
-      "2025-08-28": "Malvina"
-    };
+    const bloques = [
+      { desde: "2025-01-02", hasta: "2025-01-16", persona: "Eugenia" },
+      { desde: "2025-01-17", hasta: "2025-01-31", persona: "Malvina" },
+      { desde: "2025-02-01", hasta: "2025-02-16", persona: "Enrique" },
+      { desde: "2025-02-16", hasta: "2025-03-02", persona: "Ramon" },
+      { desde: "2025-07-19", hasta: "2025-07-27", persona: "Ramon" },
+      { desde: "2025-07-28", hasta: "2025-08-03", persona: "Malvina" }
+    ];
 
     function renderCalendar() {
       calendarGrid.innerHTML = '';
@@ -137,7 +110,7 @@
       const monthName = date.toLocaleString('es-ES', { month: 'long' });
       monthLabel.textContent = `${capitalize(monthName)} ${year}`;
 
-      const startDay = new Date(year, currentMonth, 1).getDay(); // 0 = domingo
+      const startDay = new Date(year, currentMonth, 1).getDay();
       const daysInMonth = new Date(year, currentMonth + 1, 0).getDate();
 
       ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].forEach(name => {
@@ -157,36 +130,31 @@
         div.className = 'day';
         div.textContent = d;
         div.dataset.fecha = fullDate;
-        div.onclick = () => seleccionarPersona(fullDate);
+        div.onclick = () => seleccionarBloque(fullDate);
         calendarGrid.appendChild(div);
       }
     }
 
-    function seleccionarPersona(fecha) {
+    function seleccionarBloque(fecha) {
       document.querySelectorAll('.day').forEach(d =>
         d.classList.remove('selected','eugenia','enrique','ramon','malvina')
       );
 
-      const persona = turnos[fecha];
-      if (!persona) {
+      const bloque = bloques.find(b => fecha >= b.desde && fecha <= b.hasta);
+      if (!bloque) {
         infoBox.textContent = 'Sin asignación';
         return;
       }
 
-      infoBox.textContent = persona;
+      infoBox.textContent = bloque.persona;
 
-      const baseDate = new Date(fecha);
-      const diaSemana = baseDate.getDay();
-      const offset = (diaSemana >= 4) ? diaSemana - 4 : diaSemana + 3;
-      const inicio = new Date(baseDate);
-      inicio.setDate(baseDate.getDate() - offset);
+      const inicio = new Date(bloque.desde);
+      const fin = new Date(bloque.hasta);
 
-      for (let i = 0; i < 7; i++) {
-        const dia = new Date(inicio);
-        dia.setDate(inicio.getDate() + i);
-        const diaStr = `${dia.getFullYear()}-${String(dia.getMonth()+1).padStart(2,'0')}-${String(dia.getDate()).padStart(2,'0')}`;
+      for (let d = new Date(inicio); d <= fin; d.setDate(d.getDate() + 1)) {
+        const diaStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         const div = document.querySelector(`[data-fecha="${diaStr}"]`);
-        if (div) div.classList.add(persona.toLowerCase());
+        if (div) div.classList.add(bloque.persona.toLowerCase());
       }
     }
 
