@@ -1,145 +1,104 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Sorteo Isla 2025</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Asignación de Turnos</title>
   <style>
+    :root {
+      --eugenia: #9e85e4;
+      --enrique: #4caf50;
+      --ramon: #ff9800;
+      --malvina: #f76a6a;
+      --bg-light: #f7f9fc;
+      --text-dark: #1f1f1f;
+    }
+
     body {
-      background-color: #e0ecf3;
-      color: #1a1a1a;
+      margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      text-align: center;
-      padding: 20px;
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+      padding: 30px;
     }
 
     h1 {
-      color: #2d6cdf;
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 40px;
     }
 
-    .navigation button {
-      margin: 5px;
-      padding: 8px 12px;
-      background-color: #2d6cdf;
+    .semana {
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
     }
 
-    table {
-      margin: auto;
-      border-collapse: collapse;
-      margin-top: 20px;
+    .eugenia  { background-color: var(--eugenia); }
+    .enrique  { background-color: var(--enrique); }
+    .ramon    { background-color: var(--ramon); }
+    .malvina  { background-color: var(--malvina); }
+
+    .semana h3 {
+      margin: 0;
+      font-size: 1.2rem;
     }
 
-    th, td {
-      border: 1px solid #aec8e8;
-      width: 40px;
-      height: 40px;
-      border-radius: 6px;
-      cursor: pointer;
+    .semana p {
+      margin-top: 8px;
+      font-size: 1rem;
     }
 
-    td:hover {
-      background-color: #8ab4f8;
-      color: #1a1a1a;
-    }
-
-    .selected {
-      font-weight: bold;
-      background-color: #ffecb3;
-    }
-
-    #respuesta {
-      margin-top: 20px;
-      font-size: 1.1em;
+    .footer {
+      margin-top: 60px;
+      font-size: 0.9rem;
+      text-align: center;
+      color: #999;
     }
   </style>
 </head>
 <body>
-  <h1>Sorteo Isla 2025</h1>
-  <div class="navigation">
-    <button onclick="cambiarMes(-1)">← Mes anterior</button>
-    <span id="mesAnio"></span>
-    <button onclick="cambiarMes(1)">Mes siguiente →</button>
+  <h1>Turnos Semanales</h1>
+
+  <div class="semana eugenia">
+    <h3>Semana del 18 al 24 de Marzo</h3>
+    <p>22 al 24 – Eugenia</p>
   </div>
-  <div id="calendario"></div>
-  <div id="respuesta"></div>
 
-  <script>
-    const asignaciones = {
-      "2025-01-04": "Enrique",
-      "2025-01-05": "Enrique",
-      "2025-01-11": "Ramon",
-      "2025-01-12": "Ramon",
-      "2025-01-25": "Eugenia",
-      "2025-01-26": "Eugenia",
-      "2025-02-01": "Malvina",
-      "2025-02-02": "Malvina",
-      "2025-02-08": "Enrique",
-      "2025-02-09": "Enrique",
-      "2025-02-15": "Ramon",
-      "2025-02-16": "Ramon",
-      "2025-02-22": "Eugenia",
-      "2025-02-23": "Eugenia",
-      "2025-03-08": "Enrique",
-      "2025-03-09": "Enrique",
-      "2025-03-15": "Ramon",
-      "2025-03-16": "Ramon",
-      "2025-03-29": "Eugenia",
-      "2025-03-30": "Eugenia"
-    };
+  <div class="semana enrique">
+    <h3>Semana del 29 de Abril al 5 de Mayo</h3>
+    <p>1 al 4 – Enrique</p>
+  </div>
 
-    let mesActual = 0; // Enero
-    let añoActual = 2025;
+  <div class="semana ramon">
+    <h3>Semana del 10 al 16 de Junio</h3>
+    <p>14 al 16 – Ramón</p>
+  </div>
 
-    function generarCalendario(mes, año) {
-      const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-      const primerDiaMes = new Date(año, mes, 1);
-      const ultimoDiaMes = new Date(año, mes + 1, 0);
-      const diasMes = ultimoDiaMes.getDate();
+  <div class="semana malvina">
+    <h3>Semana del 16 al 22 de Junio</h3>
+    <p>20 al 22 – Malvina</p>
+  </div>
 
-      let html = '<table><tr>' + diasSemana.map(d => `<th>${d}</th>`).join('') + '</tr><tr>';
-      let diaSemana = primerDiaMes.getDay();
+  <div class="semana eugenia">
+    <h3>Semana del 12 al 18 de Agosto</h3>
+    <p>15 al 17 – Eugenia</p>
+  </div>
 
-      for (let i = 0; i < diaSemana; i++) html += '<td></td>';
+  <div class="semana enrique">
+    <h3>Semana del 18 al 24 de Noviembre</h3>
+    <p>21 al 24 – Enrique</p>
+  </div>
 
-      for (let dia = 1; dia <= diasMes; dia++) {
-        const fechaStr = `${año}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
-        html += `<td onclick="seleccionarDia('${fechaStr}', this)">${dia}</td>`;
-        if ((dia + diaSemana) % 7 === 0) html += '</tr><tr>';
-      }
+  <div class="semana ramon">
+    <h3>Semana del 2 al 8 de Diciembre</h3>
+    <p>6 al 8 – Ramón</p>
+  </div>
 
-      html += '</tr></table>';
-      document.getElementById('calendario').innerHTML = html;
-      document.getElementById('mesAnio').textContent =
-        `${primerDiaMes.toLocaleDateString('es-ES', { month: 'long' })} ${año}`;
-    }
-
-    function seleccionarDia(fechaStr, celda) {
-      document.querySelectorAll("td").forEach(td => {
-        td.classList.remove("selected");
-      });
-
-      celda.classList.add("selected");
-      const persona = asignaciones[fechaStr];
-      document.getElementById('respuesta').textContent =
-        persona ? `📅 ${fechaStr} le toca a ${persona}` : `📅 ${fechaStr} no tiene asignación registrada`;
-    }
-
-    function cambiarMes(valor) {
-      mesActual += valor;
-      if (mesActual < 0) {
-        mesActual = 11;
-        añoActual -= 1;
-      } else if (mesActual > 11) {
-        mesActual = 0;
-        añoActual += 1;
-      }
-      generarCalendario(mesActual, añoActual);
-    }
-
-    generarCalendario(mesActual, añoActual);
-  </script>
+  <div class="footer">
+    Diseñado por Ignacio • Apariencia estilo Copilot ✨
+  </div>
 </body>
 </html>
