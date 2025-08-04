@@ -3,262 +3,430 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Calendario Asignaciones</title>
+<title>Calendario Asignaciones Enero 2025 - Marzo 2026</title>
 <style>
   body {
     font-family: Arial, sans-serif;
     margin: 20px;
+    max-width: 900px;
+  }
+  h2 {
+    margin-bottom: 0;
+  }
+  #navegacion {
+    margin: 10px 0 20px 0;
+  }
+  button {
+    cursor: pointer;
+    padding: 6px 12px;
+    margin: 0 5px;
   }
   table {
     border-collapse: collapse;
     width: 100%;
-    max-width: 900px;
   }
   th, td {
     border: 1px solid #999;
-    padding: 6px;
-    text-align: center;
+    padding: 8px;
+    width: 14.28%;
+    height: 80px;
+    vertical-align: top;
+    text-align: left;
     cursor: pointer;
     user-select: none;
+    position: relative;
   }
   th {
     background: #eee;
+    text-align: center;
   }
-  td.asignado {
-    color: white;
-  }
-  /* Colores para cada persona */
-  td.Eugenia { background: #ff6f61; }
-  td.Malvina { background: #6fa8dc; }
-  td.Enrique { background: #93c47d; }
-  td.Ramón { background: #f9cb9c; }
   td.vacaciones {
     background: #bbb;
     color: #444;
     cursor: default;
   }
+  td.asignado {
+    color: white;
+  }
+  /* Colores para personas */
+  td.Eugenia { background: #ff6f61; }
+  td.Malvina { background: #6fa8dc; }
+  td.Enrique { background: #93c47d; }
+  td.Ramón { background: #f9cb9c; color: black; }
   td.seleccionado {
     outline: 3px solid #333;
+  }
+  .fecha-num {
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  .asignacion-text {
+    font-size: 0.9em;
+  }
+  #info {
+    margin-top: 20px;
+    background: #f4f4f4;
+    padding: 10px;
+    border-radius: 6px;
   }
 </style>
 </head>
 <body>
 
-<h2>Calendario Interactivo de Asignaciones</h2>
-<p>Haz clic en una celda para ver la asignación. Bloque 2 tiene asignación de jueves a miércoles.</p>
+<h2>Calendario Asignaciones Ene 2025 - Mar 2026</h2>
+
+<div id="navegacion">
+  <button id="btn-anterior">&lt; Mes Anterior</button>
+  <span id="mes-actual" style="font-weight:bold;"></span>
+  <button id="btn-siguiente">Mes Siguiente &gt;</button>
+</div>
 
 <table id="calendario">
   <thead>
     <tr>
-      <th>Fecha</th>
-      <th>Día</th>
-      <th>Asignado</th>
+      <th>Dom</th>
+      <th>Lun</th>
+      <th>Mar</th>
+      <th>Mié</th>
+      <th>Jue</th>
+      <th>Vie</th>
+      <th>Sáb</th>
     </tr>
   </thead>
-  <tbody id="tbody-calendario">
-    <!-- Aquí se llenará con JS -->
+  <tbody id="cuerpo-calendario">
+    <!-- Se llenará con JS -->
   </tbody>
 </table>
 
+<div id="info">Selecciona una fecha o rango para ver detalles aquí.</div>
+
 <script>
-  // Datos de asignaciones (ejemplo)
-  // Bloques con fechas y asignados en orden cíclico (Eugenia, Malvina, Enrique, Ramón)
-  // Vacaciones no asignan persona (vacaciones = 'vacaciones')
+(() => {
+  const personas = ["Eugenia", "Malvina", "Enrique", "Ramón"];
+  const asignacionOrden = ["Eugenia", "Malvina", "Enrique", "Ramón"];
 
-  // Asignaciones por bloque, ejemplo
-  // Bloque 1, fechas fijas
-  // Bloque 2, jueves a miércoles
-  // Bloques 3 y 4 fechas fijas
+  // Rango calendario:
+  const primerMes = new Date(2025, 0, 1); // Enero 2025
+  const ultimoMes = new Date(2026, 2, 31); // Marzo 2026
 
-  // Para demo, fechas de agosto 2025
+  let mesActual = new Date(primerMes);
 
-  const bloques = [
-    {
-      nombre: "Bloque 1",
-      fechas: ["2025-08-01", "2025-08-02", "2025-08-03"], // ejemplo
-      asignados: ["Eugenia", "Malvina", "Enrique"]
-    },
-    {
-      nombre: "Bloque 2",
-      // Bloque 2 cubre del jueves al miércoles siguiente para cada asignación
-      fechas: [
-        // Del 7/8 (jueves) al 13/8 (miércoles)
-        { inicio: "2025-08-07", fin: "2025-08-13", asignado: "Ramón" },
-        { inicio: "2025-08-14", fin: "2025-08-20", asignado: "Eugenia" },
-        { inicio: "2025-08-21", fin: "2025-08-27", asignado: "Malvina" },
-        { inicio: "2025-08-28", fin: "2025-09-03", asignado: "Enrique" }
-      ]
-    },
-    {
-      nombre: "Bloque 3",
-      fechas: ["2025-08-04", "2025-08-05", "2025-08-06"],
-      asignados: ["Ramón", "vacaciones", "Malvina"]
-    }
-  ];
+  // Datos de asignaciones: bloques 1 a 4 con fechas y asignados.
+  // Para ejemplo y demo, asignamos algunos bloques, incluyendo el bloque 2 con la regla jueves-miércoles.
 
-  // Personas con colores para clase CSS
-  const personas = ["Eugenia", "Malvina", "Enrique", "Ramón", "vacaciones"];
+  // Bloque 2: asignaciones por rangos jueves a miércoles
+  // Vamos a definir los rangos para todo el período (cada semana jueves-miércoles) y asignar cíclicamente
 
-  // Función para crear rango de fechas en un array
-  function fechasEntre(inicioStr, finStr) {
-    const inicio = new Date(inicioStr);
-    const fin = new Date(finStr);
-    const fechas = [];
-    for(let d = new Date(inicio); d <= fin; d.setDate(d.getDate() + 1)) {
-      fechas.push(new Date(d));
-    }
-    return fechas;
-  }
+  // Crear rangos bloque 2 del 2025-01-02 (jueves) hasta el 2026-03-25 (miércoles)
+  // Eso es para cubrir todo el rango
 
-  // Función para formatear fecha a yyyy-mm-dd
+  // Función auxiliar para formatear fecha yyyy-mm-dd
   function formatFecha(date) {
     const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, "0");
-    const d = String(date.getDate()).padStart(2, "0");
+    const m = String(date.getMonth() + 1).padStart(2,"0");
+    const d = String(date.getDate()).padStart(2,"0");
     return `${y}-${m}-${d}`;
   }
 
-  // Crear listado completo de fechas a mostrar
-  // Vamos a juntar todas las fechas de bloques
-  function obtenerFechasTotales() {
-    const fechasSet = new Set();
+  // Crear todos los jueves desde 2025-01-02 al 2026-03-25
+  function crearRangosBloque2() {
+    const rangos = [];
+    let inicio = new Date(2025, 0, 2); // 2 ene 2025 jueves
+    let finLimite = new Date(2026, 2, 25); // 25 mar 2026 miércoles
+    let personaIndex = 0;
+    while (inicio <= finLimite) {
+      let fin = new Date(inicio);
+      fin.setDate(fin.getDate() + 6); // miércoles siguiente
+      if (fin > finLimite) fin = finLimite;
 
-    bloques.forEach(bloque => {
-      if (bloque.fechas) {
-        bloque.fechas.forEach(f => fechasSet.add(f));
-      } else if (bloque.fechas instanceof Array) {
-        // Ya manejado
-      } else if (bloque.fechas && bloque.fechas.length === undefined && bloque.fechas.inicio) {
-        // Nada para acá
-      }
-
-      if (bloque.nombre === "Bloque 2") {
-        bloque.fechas.forEach(rango => {
-          fechasEntre(rango.inicio, rango.fin).forEach(fechad => fechasSet.add(formatFecha(fechad)));
-        });
-      }
-    });
-
-    // Convertir a array y ordenar ascendente
-    return Array.from(fechasSet).sort();
-  }
-
-  // Función para obtener asignado para una fecha dada
-  function obtenerAsignado(fechaStr) {
-    // Primero, buscar en bloque 2 si la fecha cae en algún rango
-    const bloque2 = bloques.find(b => b.nombre === "Bloque 2");
-    if (bloque2) {
-      for (const rango of bloque2.fechas) {
-        if (fechaStr >= rango.inicio && fechaStr <= rango.fin) {
-          return rango.asignado;
-        }
-      }
-    }
-    // Si no está en bloque 2, buscar en otros bloques
-    for (const bloque of bloques) {
-      if (bloque.nombre === "Bloque 2") continue;
-      if (bloque.fechas && bloque.asignados) {
-        const index = bloque.fechas.indexOf(fechaStr);
-        if (index !== -1) {
-          return bloque.asignados[index];
-        }
-      }
-    }
-    // Si no está asignado
-    return "";
-  }
-
-  // Mostrar calendario
-  function mostrarCalendario() {
-    const tbody = document.getElementById("tbody-calendario");
-    tbody.innerHTML = "";
-
-    const fechasTotales = obtenerFechasTotales();
-
-    fechasTotales.forEach(fechaStr => {
-      const tr = document.createElement("tr");
-      const fechaObj = new Date(fechaStr);
-
-      // Día de la semana (en español)
-      const diasSemana = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
-      const diaSemana = diasSemana[fechaObj.getDay()];
-
-      const tdFecha = document.createElement("td");
-      tdFecha.textContent = fechaStr;
-
-      const tdDia = document.createElement("td");
-      tdDia.textContent = diaSemana;
-
-      const tdAsignado = document.createElement("td");
-
-      const asignado = obtenerAsignado(fechaStr);
-      tdAsignado.textContent = asignado !== "vacaciones" ? asignado : "Vacaciones";
-
-      // Asignar clase para color
-      if (personas.includes(asignado)) {
-        tdAsignado.classList.add(asignado);
-        tdAsignado.classList.add("asignado");
-      }
-      if (asignado === "vacaciones") {
-        tdAsignado.classList.add("vacaciones");
-      }
-
-      // Click para seleccionar bloque 2 desde jueves a miércoles
-      tr.dataset.fecha = fechaStr;
-      tr.addEventListener("click", () => onSeleccionarFecha(fechaStr));
-
-      tr.appendChild(tdFecha);
-      tr.appendChild(tdDia);
-      tr.appendChild(tdAsignado);
-
-      tbody.appendChild(tr);
-    });
-  }
-
-  // Cuando se selecciona una fecha en el calendario
-  function onSeleccionarFecha(fechaStr) {
-    // Para el bloque 2, seleccionar el rango jueves a miércoles
-    // Si la fecha no está en bloque 2, solo se selecciona la fecha
-
-    // Limpiar selección previa
-    document.querySelectorAll("#tbody-calendario tr").forEach(tr => {
-      tr.classList.remove("seleccionado");
-    });
-
-    // Verificar si fecha está en bloque 2 rango
-    const bloque2 = bloques.find(b => b.nombre === "Bloque 2");
-    let rangoSeleccionado = null;
-
-    if (bloque2) {
-      for (const rango of bloque2.fechas) {
-        if (fechaStr >= rango.inicio && fechaStr <= rango.fin) {
-          rangoSeleccionado = rango;
-          break;
-        }
-      }
-    }
-
-    if (rangoSeleccionado) {
-      // Seleccionar todas las filas que estén entre rango.inicio y rango.fin
-      document.querySelectorAll("#tbody-calendario tr").forEach(tr => {
-        const f = tr.dataset.fecha;
-        if (f >= rangoSeleccionado.inicio && f <= rangoSeleccionado.fin) {
-          tr.classList.add("seleccionado");
-        }
+      rangos.push({
+        inicio: formatFecha(inicio),
+        fin: formatFecha(fin),
+        asignado: asignacionOrden[personaIndex]
       });
-      alert(`Bloque 2 asignado a: ${rangoSeleccionado.asignado}\nDesde ${rangoSeleccionado.inicio} hasta ${rangoSeleccionado.fin}`);
-    } else {
-      // Solo seleccionar la fila clickeada
-      const fila = document.querySelector(`#tbody-calendario tr[data-fecha="${fechaStr}"]`);
-      if (fila) fila.classList.add("seleccionado");
+      personaIndex = (personaIndex + 1) % asignacionOrden.length;
+      inicio.setDate(inicio.getDate() + 7);
+    }
+    return rangos;
+  }
 
+  const rangosBloque2 = crearRangosBloque2();
+
+  // Bloques 1, 3 y 4 con asignaciones simples por fecha (ejemplo):
+  // Por simplicidad, generamos un objeto de asignaciones con fecha -> asignado
+  // Puedes ajustar estas asignaciones según tu lógica real
+
+  // Para el ejemplo asignamos vacaciones en algunas fechas, para mostrar funcionalidad
+  const asignacionesFecha = {};
+
+  // Ejemplo asignaciones para bloque 1 y otros (excepto bloque 2)
+  // Desde 2025-01-01 a 2026-03-31
+
+  // Para ejemplificar, asignamos un ciclo simple día a día (excepto bloque 2)
+  // En ciertas fechas pongo vacaciones para mostrar ejemplo
+  // Vacaciones están representadas como "vacaciones"
+
+  // Crear ciclo simple por fecha (día a día)
+  function asignarBloquesSimples() {
+    const start = new Date(2025,0,1);
+    const end = new Date(2026,2,31);
+    let personaIndex = 0;
+    for(let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) {
+      const f = formatFecha(d);
+
+      // Para fechas dentro bloque 2 las dejamos sin asignar aquí (ya están en rangosBloque2)
+      // Por eso chequeamos si la fecha está en bloque 2 para evitar solapamiento
+      let estaEnBloque2 = rangosBloque2.some(r => f >= r.inicio && f <= r.fin);
+      if (estaEnBloque2) {
+        asignacionesFecha[f] = null; // no asignado aquí (bloque 2)
+        continue;
+      }
+
+      // Para ejemplo: cada 10 días ponemos vacaciones
+      const diaNum = d.getDate();
+      if (diaNum === 15) {
+        asignacionesFecha[f] = "vacaciones";
+      } else {
+        asignacionesFecha[f] = asignacionOrden[personaIndex];
+      }
+
+      personaIndex = (personaIndex + 1) % asignacionOrden.length;
+    }
+  }
+  asignarBloquesSimples();
+
+  // Función para obtener asignado según la fecha y la regla de bloques
+  function obtenerAsignado(fechaStr) {
+    // Primero chequeamos bloque 2 (rangos jueves-miércoles)
+    const rango = rangosBloque2.find(r => fechaStr >= r.inicio && fechaStr <= r.fin);
+    if (rango) return rango.asignado;
+
+    // Sino chequeamos asignaciones simples
+    if (asignacionesFecha.hasOwnProperty(fechaStr)) {
+      return asignacionesFecha[fechaStr];
+    }
+    return null;
+  }
+
+  // Construir calendario mensual
+  function construirCalendario(mesDate) {
+    const cuerpo = document.getElementById("cuerpo-calendario");
+    cuerpo.innerHTML = "";
+
+    const year = mesDate.getFullYear();
+    const month = mesDate.getMonth();
+
+    // Mostrar mes y año
+    const mesesNombre = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio",
+      "Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    document.getElementById("mes-actual").textContent = `${mesesNombre[month]} ${year}`;
+
+    // Primer día del mes
+    const primerDia = new Date(year, month, 1);
+    const ultimoDia = new Date(year, month + 1, 0);
+    const diasMes = ultimoDia.getDate();
+
+    // Día de la semana del primer día (0=dom,6=sab)
+    const primerDiaSemana = primerDia.getDay();
+
+    // Crear filas y celdas
+    let fila = document.createElement("tr");
+    // Añadir celdas vacías antes del primer día
+    for(let i=0; i<primerDiaSemana; i++) {
+      const td = document.createElement("td");
+      fila.appendChild(td);
+    }
+
+    for(let dia=1; dia<=diasMes; dia++) {
+      const td = document.createElement("td");
+      const fechaStr = formatFecha(new Date(year, month, dia));
+
+      // Fecha número arriba
+      const divFechaNum = document.createElement("div");
+      divFechaNum.className = "fecha-num";
+      divFechaNum.textContent = dia;
+      td.appendChild(divFechaNum);
+
+      // Asignación abajo
       const asignado = obtenerAsignado(fechaStr);
-      alert(`Fecha: ${fechaStr}\nAsignado: ${asignado !== "vacaciones" ? asignado : "Vacaciones"}`);
+      if (asignado) {
+        const divAsign = document.createElement("div");
+        divAsign.className = "asignacion-text";
+        divAsign.textContent = asignado === "vacaciones" ? "Vacaciones" : asignado;
+        td.appendChild(divAsign);
+
+        // Clase para color si persona válida
+        if (personas.includes(asignado)) {
+          td.classList.add(asignado);
+          td.classList.add("asignado");
+        } else if (asignado === "vacaciones") {
+          td.classList.add("vacaciones");
+        }
+      }
+
+      // Guardamos fecha en dataset para usar en eventos
+      td.dataset.fecha = fechaStr;
+
+      // Evento click para seleccionar (ver detalles + selección rango para bloque 2)
+      td.addEventListener("click", () => onClickFecha(fechaStr));
+
+      fila.appendChild(td);
+
+      // Si sábado cerramos fila y creamos nueva
+      if ((primerDiaSemana + dia) % 7 === 0) {
+        cuerpo.appendChild(fila);
+        fila = document.createElement("tr");
+      }
+    }
+
+    // Añadir celdas vacías al final para completar fila si faltan
+    const celdasUltimaFila = fila.children.length;
+    if (celdasUltimaFila > 0 && celdasUltimaFila < 7) {
+      for(let i=celdasUltimaFila; i<7; i++) {
+        const td = document.createElement("td");
+        fila.appendChild(td);
+      }
+      cuerpo.appendChild(fila);
     }
   }
 
-  mostrarCalendario();
+  // Variables para selección y estado
+  let seleccionActual = [];
 
+  // Evento click en fecha
+  function onClickFecha(fechaStr) {
+    // Limpiar selección previa en DOM
+    document.querySelectorAll("#cuerpo-calendario td").forEach(td => {
+      td.classList.remove("seleccionado");
+    });
+    seleccionActual = [];
+
+    // Comprobar si fecha pertenece a un rango bloque 2
+    const rango = rangosBloque2.find(r => fechaStr >= r.inicio && fechaStr <= r.fin);
+
+    if (rango) {
+      // Seleccionamos rango completo jueves a miércoles
+      const fInicio = new Date(rango.inicio);
+      const fFin = new Date(rango.fin);
+      let f = new Date(fInicio);
+      while (f <= fFin) {
+        const fStr = formatFecha(f);
+        const td = document.querySelector(`#cuerpo-calendario td[data-fecha="${fStr}"]`);
+        if (td) {
+          td.classList.add("seleccionado");
+          seleccionActual.push(fStr);
+        }
+        f.setDate(f.getDate() + 1);
+      }
+      mostrarInfo(`Bloque 2 asignado a <b>${rango.asignado}</b><br>Desde ${rango.inicio} hasta ${rango.fin}`, true, rango);
+    } else {
+      // Solo seleccionar la celda
+      const td = document.querySelector(`#cuerpo-calendario td[data-fecha="${fechaStr}"]`);
+      if (td) {
+        td.classList.add("seleccionado");
+        seleccionActual.push(fechaStr);
+      }
+      const asignado = obtenerAsignado(fechaStr);
+      let textoInfo = `Fecha: <b>${fechaStr}</b><br>`;
+      if (asignado) {
+        textoInfo += `Asignado: <b>${asignado === "vacaciones" ? "Vacaciones" : asignado}</b>`;
+      } else {
+        textoInfo += "No asignado";
+      }
+      mostrarInfo(textoInfo, asignado === "vacaciones", null);
+    }
+  }
+
+  // Mostrar información y botón para eliminar vacaciones si corresponde
+  function mostrarInfo(html, puedeEliminarVacaciones, rangoBloque2) {
+    const info = document.getElementById("info");
+    info.innerHTML = html;
+    if (puedeEliminarVacaciones) {
+      const btn = document.createElement("button");
+      btn.textContent = "Eliminar vacaciones y reasignar";
+      btn.style.marginTop = "10px";
+      btn.onclick = () => {
+        if (confirm("¿Seguro que quieres eliminar vacaciones y reasignar este bloque?")) {
+          eliminarVacacionesYReasignar(seleccionActual, rangoBloque2);
+        }
+      };
+      info.appendChild(btn);
+    }
+  }
+
+  // Función para eliminar vacaciones y reasignar bloque
+  // La idea: si se elimina vacaciones de un rango (bloque 2 o fechas simples),
+  // reasignamos ese rango a Eugenia y el resto sigue el ciclo cíclico (Malvina, Enrique, Ramón)
+  function eliminarVacacionesYReasignar(fechasSeleccionadas, rangoBloque2) {
+    if (!fechasSeleccionadas.length) return;
+
+    // Para bloque 2:
+    if (rangoBloque2) {
+      // Encontrar índice del rango dentro de rangosBloque2
+      const idx = rangosBloque2.findIndex(r => r.inicio === rangoBloque2.inicio && r.fin === rangoBloque2.fin);
+      if (idx === -1) return;
+
+      // Reasignar a partir de idx:
+      // La asignación empieza con Eugenia para este bloque
+      // Luego sigue el ciclo Malvina, Enrique, Ramón, y continúa ciclando
+
+      // Actualizamos rangosBloque2 desde idx en adelante
+      let personaIndex = asignacionOrden.indexOf("Eugenia");
+      for (let i = idx; i < rangosBloque2.length; i++) {
+        rangosBloque2[i].asignado = asignacionOrden[personaIndex];
+        personaIndex = (personaIndex + 1) % asignacionOrden.length;
+      }
+
+      // Para las fechas en bloque 2, no modificamos asignacionesFecha (ya son null)
+      // Solo actualizamos visualmente
+
+    } else {
+      // Para fechas simples, eliminamos vacaciones y reasignamos cíclicamente
+      // Encontrar la posición en el ciclo según la primera fecha seleccionada
+
+      fechasSeleccionadas.sort();
+
+      // Por simplicidad reasignamos el primer día a Eugenia, luego sigue ciclo
+
+      let personaIndex = asignacionOrden.indexOf("Eugenia");
+      for (const f of fechasSeleccionadas) {
+        asignacionesFecha[f] = asignacionOrden[personaIndex];
+        personaIndex = (personaIndex + 1) % asignacionOrden.length;
+      }
+    }
+
+    // Reconstruir calendario para reflejar cambios y limpiar selección e info
+    construirCalendario(mesActual);
+    seleccionActual = [];
+    mostrarInfo("Vacaciones eliminadas y reasignación realizada.", false, null);
+  }
+
+  // Navegación meses
+  document.getElementById("btn-anterior").addEventListener("click", () => {
+    const nuevoMes = new Date(mesActual);
+    nuevoMes.setMonth(nuevoMes.getMonth() - 1);
+    if (nuevoMes >= primerMes) {
+      mesActual = nuevoMes;
+      construirCalendario(mesActual);
+      seleccionActual = [];
+      mostrarInfo("Selecciona una fecha o rango para ver detalles aquí.");
+    }
+  });
+
+  document.getElementById("btn-siguiente").addEventListener("click", () => {
+    const nuevoMes = new Date(mesActual);
+    nuevoMes.setMonth(nuevoMes.getMonth() + 1);
+    if (nuevoMes <= ultimoMes) {
+      mesActual = nuevoMes;
+      construirCalendario(mesActual);
+      seleccionActual = [];
+      mostrarInfo("Selecciona una fecha o rango para ver detalles aquí.");
+    }
+  });
+
+  // Inicializar
+  construirCalendario(mesActual);
+})();
 </script>
 
 </body>
