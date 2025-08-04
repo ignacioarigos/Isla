@@ -5,202 +5,272 @@
   <title>Calendario de Asignaciones</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f5f5f5;
-      color: #222;
+      font-family: Segoe UI, Roboto, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       padding: 20px;
     }
-    #calendario {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-      margin-top: 10px;
+    h1 {
+      font-weight: 600;
+      margin-bottom: 20px;
     }
-    .dia {
-      padding: 8px;
-      text-align: center;
+    #controles {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 12px;
+    }
+    button {
+      padding: 6px 12px;
+      background-color: #ffa500;
+      color: white;
+      border: none;
       border-radius: 6px;
       cursor: pointer;
+      font-weight: 500;
     }
-    .vacaciones { background-color: #007acc; color: white; }
-    .bloque2    { background-color: #ffaa00; color: black; }
-    .bloque3    { background-color: #88cc00; color: black; }
-    .bloque4    { background-color: #cc66cc; color: white; }
-    .no-asignado { background-color: #ddd; color: #666; }
-    #resultado {
-      margin-top: 15px;
-      padding: 10px;
-      background-color: #fff;
-      border: 1px solid #ccc;
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    button:hover:not(:disabled) {
+      background-color: #ff8c00;
+    }
+    #mes-actual {
+      font-size: 18px;
+      font-weight: 500;
+      background: #fff3cd;
+      padding: 6px 12px;
       border-radius: 6px;
     }
-    #mesControles {
-      margin-top: 10px;
+    table {
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    #mesControles button {
-      padding: 6px 10px;
-      margin: 0 5px;
-      font-size: 16px;
+    th, td {
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      border: 1px solid #ccc;
+    }
+    td {
+      cursor: pointer;
+    }
+    td:hover {
+      background-color: #eee;
+    }
+    .highlight {
+      font-weight: bold;
+      color: white;
+    }
+    .eugenia  { background: linear-gradient(135deg, #bb86fc, #9e71e9); }
+    .malvina  { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+    .ramon    { background: linear-gradient(135deg, #f7901e, #e85c00); }
+    .enrique  { background: linear-gradient(135deg, #ff7f7f, #ff4f4f); }
+    #asignado {
+      margin-top: 16px;
+      font-weight: 500;
+      background-color: #fff8e1;
+      padding: 8px 16px;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
     }
   </style>
 </head>
 <body>
   <h1>Calendario de Asignaciones</h1>
-  <div id="mesControles">
-    <button onclick="mesAnterior()">◀</button>
-    <span id="mesActual"></span>
-    <button onclick="mesSiguiente()">▶</button>
+  <div id="controles">
+    <button id="prevMes">◀︎ Anterior</button>
+    <div id="mes-actual">Enero 2025</div>
+    <button id="nextMes">Siguiente ▶︎</button>
   </div>
-  <div id="calendario"></div>
-  <div id="resultado"></div>
-
-<script>
-const bloques = [
-  {
-    nombre: "Vacaciones",
-    prioridad: 1,
-    clase: "vacaciones",
-    asignaciones: [
-      { inicio: "2025-01-02", fin: "2025-01-16", nombre: "Eugenia" },
-      { inicio: "2025-01-17", fin: "2025-01-31", nombre: "Malvina" },
-      { inicio: "2025-02-01", fin: "2025-02-15", nombre: "Enrique" },
-      { inicio: "2025-02-16", fin: "2025-03-02", nombre: "Ramón" }
-    ]
-  },
-  {
-    nombre: "Bloque 2",
-    prioridad: 4,
-    clase: "bloque2",
-    asignaciones: [
-      { inicio: "2025-08-07", fin: "2025-08-13", nombre: "Eugenia" },
-      { inicio: "2025-08-14", fin: "2025-08-20", nombre: "Malvina" },
-      { inicio: "2025-08-21", fin: "2025-08-27", nombre: "Enrique" },
-      { inicio: "2025-08-28", fin: "2025-09-03", nombre: "Ramón" },
-      { inicio: "2025-09-04", fin: "2025-09-10", nombre: "Malvina" },
-      { inicio: "2025-09-11", fin: "2025-09-17", nombre: "Eugenia" }
-    ]
-  },
-  {
-    nombre: "Bloque 3",
-    prioridad: 2,
-    clase: "bloque3",
-    asignaciones: [
-      { inicio: "2025-07-01", fin: "2025-07-15", nombre: "Enrique" },
-      { inicio: "2025-07-16", fin: "2025-07-31", nombre: "Ramón" },
-      { inicio: "2025-10-01", fin: "2025-10-15", nombre: "Malvina" },
-      { inicio: "2025-10-16", fin: "2025-10-31", nombre: "Eugenia" }
-    ]
-  },
-  {
-    nombre: "Bloque 4",
-    prioridad: 3,
-    clase: "bloque4",
-    asignaciones: [
-      { inicio: "2025-12-20", fin: "2025-12-31", nombre: "Malvina" },
-      { inicio: "2026-01-01", fin: "2026-01-10", nombre: "Eugenia" },
-      { inicio: "2026-01-11", fin: "2026-01-20", nombre: "Ramón" },
-      { inicio: "2026-01-21", fin: "2026-01-31", nombre: "Enrique" },
-      { inicio: "2026-02-01", fin: "2026-02-14", nombre: "Malvina" },
-      { inicio: "2026-02-15", fin: "2026-02-28", nombre: "Eugenia" }
-    ]
-  }
+  <table id="calendario">
+    <thead>
+      <tr>
+        <th>Do</th><th>Lu</th><th>Ma</th><th>Mi</th><th>Ju</th><th>Vi</th><th>Sa</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div id="asignado">Seleccioná una fecha para ver la asignación</div>
+  <script>
+const bloque1 = [
+  { inicio: "2025-01-02", fin: "2025-01-16", nombre: "eugenia" },
+  { inicio: "2025-01-17", fin: "2025-01-31", nombre: "malvina" },
+  { inicio: "2025-02-01", fin: "2025-02-15", nombre: "enrique" },
+  { inicio: "2025-02-16", fin: "2025-03-02", nombre: "ramon" },
+  { inicio: "2025-03-03", fin: "2025-03-16", nombre: "eugenia" }
 ];
 
-const fechaInicio = new Date("2025-01-01");
-const fechaFin = new Date("2026-03-31");
-let mesActual = new Date("2025-01-01");
+const bloque2 = [
+  { inicio: "2025-08-07", fin: "2025-08-13", nombre: "malvina" },
+  { inicio: "2025-08-14", fin: "2025-08-20", nombre: "enrique" },
+  { inicio: "2025-08-21", fin: "2025-08-27", nombre: "ramon" },
+  { inicio: "2025-08-28", fin: "2025-09-03", nombre: "eugenia" },
+  { inicio: "2025-09-04", fin: "2025-09-10", nombre: "malvina" },
+  { inicio: "2025-09-11", fin: "2025-09-17", nombre: "enrique" }
+];
 
-function mesAnterior() {
-  mesActual.setMonth(mesActual.getMonth() - 1);
-  renderizarCalendario();
-}
+const bloque3 = [
+  { inicio: "2026-01-02", fin: "2026-01-16", nombre: "ramon" },
+  { inicio: "2026-01-17", fin: "2026-01-31", nombre: "eugenia" },
+  { inicio: "2026-02-01", fin: "2026-02-15", nombre: "malvina" },
+  { inicio: "2026-02-16", fin: "2026-03-02", nombre: "enrique" }
+];
 
-function mesSiguiente() {
-  mesActual.setMonth(mesActual.getMonth() + 1);
-  renderizarCalendario();
-}
+const bloque4 = [
+  { inicio: "2025-07-19", fin: "2025-07-27", nombre: "ramon" },
+  { inicio: "2025-07-28", fin: "2025-08-03", nombre: "malvina" }
+];
 
-function extenderBloque2(fecha) {
-  const diaSemana = fecha.getDay(); // jueves = 4
-  const diferencia = (diaSemana >= 4) ? diaSemana - 4 : 7 - (4 - diaSemana);
-  const inicio = new Date(fecha);
-  inicio.setDate(fecha.getDate() - diferencia);
-  const fin = new Date(inicio);
-  fin.setDate(inicio.getDate() + 6);
-  return [inicio, fin];
-}
+const colores = {
+  eugenia: "eugenia",
+  malvina: "malvina",
+  ramon: "ramon",
+  enrique: "enrique"
+};
 
-function renderizarCalendario() {
-  const calendario = document.getElementById("calendario");
-  const mesLabel = document.getElementById("mesActual");
-  calendario.innerHTML = "";
+const tbody = document.querySelector("tbody");
+const mesActualElem = document.getElementById("mes-actual");
+const btnPrev = document.getElementById("prevMes");
+const btnNext = document.getElementById("nextMes");
+let fechaActual = new Date(2025, 0);
+const minFecha = new Date(2025, 0);
+const maxFecha = new Date(2026, 2);
 
-  const year = mesActual.getFullYear();
-  const month = mesActual.getMonth();
-  mesLabel.textContent = mesActual.toLocaleDateString("es-AR", { year: "numeric", month: "long" });
+dibujarMes(fechaActual);
 
-  const primerDia = new Date(year, month, 1);
-  const ultimoDia = new Date(year, month + 1, 0);
-  const offset = primerDia.getDay();
+btnPrev.onclick = () => {
+  fechaActual.setMonth(fechaActual.getMonth() - 1);
+  if (fechaActual < minFecha) fechaActual = new Date(minFecha);
+  dibujarMes(fechaActual);
+};
 
-  for (let i = 0; i < offset; i++) {
-    const celdaVacia = document.createElement("div");
-    calendario.appendChild(celdaVacia);
-  }
+btnNext.onclick = () => {
+  fechaActual.setMonth(fechaActual.getMonth() + 1);
+  if (fechaActual > maxFecha) fechaActual = new Date(maxFecha);
+  dibujarMes(fechaActual);
+};
 
-  for (let d = 1; d <= ultimoDia.getDate(); d++) {
-    const fecha = new Date(year, month, d);
-    if (fecha < fechaInicio || fecha > fechaFin) continue;
+function dibujarMes(fecha) {
+  tbody.innerHTML = "";
+  const año = fecha.getFullYear();
+  const mes = fecha.getMonth();
+  const primerDia = new Date(año, mes, 1);
+  const ultimoDia = new Date(año, mes + 1, 0);
+  const diaInicio = primerDia.getDay();
+  const diasEnMes = ultimoDia.getDate();
 
-    const dia = document.createElement("div");
-    dia.classList.add("dia");
+  let fila = document.createElement("tr");
+  for (let i = 0; i < diaInicio; i++) fila.appendChild(document.createElement("td"));
 
-    let asignado = null;
-    let prioridadActual = Infinity;
-
-    bloques.forEach(bloque => {
-      bloque.asignaciones.forEach(asignacion => {
-        let inicio = new Date(asignacion.inicio);
-        let fin = new Date(asignacion.fin);
-
-        // Solo extender rango si la fecha pertenece al bloque 2
-        if (bloque.nombre === "Bloque 2" && fecha >= inicio && fecha <= fin) {
-          const rangoExtendido = extenderBloque2(inicio);
-          inicio = rangoExtendido[0];
-          fin = rangoExtendido[1];
-        }
-
-        if (fecha >= inicio && fecha <= fin && bloque.prioridad < prioridadActual) {
-          asignado = {
-            nombre: asignacion.nombre,
-            clase: bloque.clase,
-            bloque: bloque.nombre,
-            desde: asignacion.inicio,
-            hasta: asignacion.fin
-          };
-          prioridadActual = bloque.prioridad;
-        }
-      });
-    });
-
-    if (asignado) {
-      dia.classList.add(asignado.clase);
-      dia.onclick = () => {
-        document.getElementById("resultado").innerHTML =
-          `<strong>${asignado.nombre}</strong> está asignado en <strong>${asignado.bloque}</strong><br>Del <strong>${asignado.desde}</strong> al <strong>${asignado.hasta}</strong>`;
-      };
-    } else {
-      dia.classList.add("no-asignado");
+  for (let dia = 1; dia <= diasEnMes; dia++) {
+    const celda = document.createElement("td");
+    celda.textContent = dia;
+    const fechaStr = `${año}-${(mes + 1).toString().padStart(2, '0')}-${dia.toString().padStart(2, '0')}`;
+    celda.dataset.fecha = fechaStr;
+    celda.onclick = () => seleccionarFecha(fechaStr);
+    fila.appendChild(celda);
+    if ((dia + diaInicio) % 7 === 0) {
+      tbody.appendChild(fila);
+      fila = document.createElement("tr");
     }
-
-    dia.textContent = d;
-    calendario.appendChild(dia);
   }
 
-  // Fin del renderizado
+  if (fila.hasChildNodes()) tbody.appendChild(fila);
+  const nombreMes = fecha.toLocaleString("es-ES", { month: "long" });
+  mesActualElem.textContent = `${nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1)} ${año}`;
+  actualizarBotones();
+  limpiarColores();
+  document.getElementById("asignado").textContent = "Seleccioná una fecha para ver la asignación";
 }
 
-renderizarCalendario();
+function actualizarBotones
+  function actualizarBotones() {
+  btnPrev.disabled = fechaActual <= minFecha;
+  btnNext.disabled = fechaActual >= maxFecha;
+}
+
+function seleccionarFecha(fechaStr) {
+  limpiarColores();
+  const fechaSeleccionada = new Date(fechaStr);
+  let encontrado = false;
+
+  for (const grupo of [bloque1, bloque3, bloque4]) {
+    for (const r of grupo) {
+      const inicio = new Date(r.inicio);
+      const fin = new Date(r.fin);
+      if (fechaSeleccionada >= inicio && fechaSeleccionada <= fin) {
+        pintarRango(inicio, fin, r.nombre);
+        document.getElementById("asignado").textContent = `Bloque asignado: ${capitalizar(r.nombre)} del ${formatear(inicio)} al ${formatear(fin)}`;
+        encontrado = true;
+        return;
+      }
+    }
+  }
+
+  for (const r of bloque2) {
+    let inicio = new Date(r.inicio);
+    let fin = new Date(r.fin);
+    const jueves = obtenerJuevesAnterior(inicio);
+    const miercoles = obtenerMiercolesSiguiente(fin);
+    if (fechaSeleccionada >= jueves && fechaSeleccionada <= miercoles) {
+      pintarRango(jueves, miercoles, r.nombre);
+      document.getElementById("asignado").textContent = `Bloque 2: ${capitalizar(r.nombre)} asignado del ${formatear(jueves)} al ${formatear(miercoles)}`;
+      encontrado = true;
+      return;
+    }
+  }
+
+  if (!encontrado) {
+    document.getElementById("asignado").textContent = "No hay asignación para la fecha seleccionada";
+  }
+}
+
+function pintarRango(inicio, fin, nombre) {
+  const celdas = document.querySelectorAll("td");
+  for (const celda of celdas) {
+    const f = celda.dataset.fecha;
+    if (!f) continue;
+    const fechaCelda = new Date(f);
+    if (fechaCelda >= inicio && fechaCelda <= fin) {
+      celda.classList.add("highlight", colores[nombre]);
+    }
+  }
+}
+
+function limpiarColores() {
+  document.querySelectorAll("td").forEach(celda => {
+    celda.classList.remove("highlight", "eugenia", "malvina", "ramon", "enrique");
+  });
+}
+
+function obtenerJuevesAnterior(fecha) {
+  const copia = new Date(fecha);
+  while (copia.getDay() !== 4) copia.setDate(copia.getDate() - 1);
+  return copia;
+}
+
+function obtenerMiercolesSiguiente(fecha) {
+  const copia = new Date(fecha);
+  while (copia.getDay() !== 3) copia.setDate(copia.getDate() + 1);
+  return copia;
+}
+
+function formatear(fecha) {
+  const d = fecha.getDate().toString().padStart(2, "0");
+  const m = (fecha.getMonth() + 1).toString().padStart(2, "0");
+  const y = fecha.getFullYear();
+  return `${d}/${m}/${y}`;
+}
+
+function capitalizar(txt) {
+  return txt.charAt(0).toUpperCase() + txt.slice(1);
+}
 </script>
 </body>
 </html>
+  
