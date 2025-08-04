@@ -1,320 +1,265 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Calendario de Asignaciones</title>
-  <style>
-    body {
-      font-family: Segoe UI, Roboto, sans-serif;
-      background-color: #f5f7fa;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
-    h1 {
-      font-weight: 600;
-      margin-bottom: 20px;
-    }
-    #controles {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 12px;
-    }
-    button {
-      padding: 6px 12px;
-      background-color: #ffa500;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-    button:hover:not(:disabled) {
-      background-color: #ff8c00;
-    }
-    #mes-actual {
-      font-size: 18px;
-      font-weight: 500;
-      background: #fff3cd;
-      padding: 6px 12px;
-      border-radius: 6px;
-    }
-    table {
-      border-collapse: collapse;
-      background-color: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    th, td {
-      width: 40px;
-      height: 40px;
-      text-align: center;
-      border: 1px solid #ccc;
-    }
-    td {
-      cursor: pointer;
-    }
-    td:hover {
-      background-color: #eee;
-    }
-    .highlight {
-      font-weight: bold;
-      color: white;
-    }
-    .eugenia  { background: linear-gradient(135deg, #bb86fc, #9e71e9); }
-    .malvina  { background: linear-gradient(135deg, #2ecc71, #27ae60); }
-    .ramon    { background: linear-gradient(135deg, #f7901e, #e85c00); }
-    .enrique  { background: linear-gradient(135deg, #ff7f7f, #ff4f4f); }
-
-    /* Conflictos visuales */
-    .conflicto2 { background-color: #d1b2ff !important; border: 2px solid #a782e0; }
-    .conflicto3 { background-color: #ffc0c0 !important; border: 2px solid #e06666; }
-    .conflicto4 { background-color: #ffcc80 !important; border: 2px solid #e69500; }
-    .conflictoX { background-color: #ccffcc !important; border: 2px solid #33aa33; }
-
-    #asignado {
-      margin-top: 16px;
-      font-weight: 500;
-      background-color: #fff8e1;
-      padding: 8px 16px;
-      border-radius: 8px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Calendario Asignaciones</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 900px;
+  }
+  th, td {
+    border: 1px solid #999;
+    padding: 6px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+  }
+  th {
+    background: #eee;
+  }
+  td.asignado {
+    color: white;
+  }
+  /* Colores para cada persona */
+  td.Eugenia { background: #ff6f61; }
+  td.Malvina { background: #6fa8dc; }
+  td.Enrique { background: #93c47d; }
+  td.Ramón { background: #f9cb9c; }
+  td.vacaciones {
+    background: #bbb;
+    color: #444;
+    cursor: default;
+  }
+  td.seleccionado {
+    outline: 3px solid #333;
+  }
+</style>
 </head>
 <body>
-  <h1>Calendario de Asignaciones</h1>
-  <div id="controles">
-    <button id="prevMes">◀︎ Anterior</button>
-    <div id="mes-actual">Enero 2025</div>
-    <button id="nextMes">Siguiente ▶︎</button>
-  </div>
-  <table id="calendario">
-    <thead>
-      <tr>
-        <th>Do</th><th>Lu</th><th>Ma</th><th>Mi</th><th>Ju</th><th>Vi</th><th>Sa</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-  <div id="asignado">Seleccioná una fecha para ver la asignación</div>
 
-  <script>
-    let fechaActual = new Date(2025, 0);
-    const minFecha = new Date(2025, 0);
-    const maxFecha = new Date(2026, 2);
-    const colores = {
-      eugenia: "eugenia",
-      malvina: "malvina",
-      ramon: "ramon",
-      enrique: "enrique"
-    };
+<h2>Calendario Interactivo de Asignaciones</h2>
+<p>Haz clic en una celda para ver la asignación. Bloque 2 tiene asignación de jueves a miércoles.</p>
 
-    const bloque1 = [
-  { inicio: "2025-01-02", fin: "2025-01-16", nombre: "eugenia" },
-  { inicio: "2025-01-17", fin: "2025-01-31", nombre: "malvina" },
-  { inicio: "2025-02-01", fin: "2025-02-15", nombre: "enrique" },
-  { inicio: "2025-02-16", fin: "2025-03-02", nombre: "ramon" }
-];
+<table id="calendario">
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Día</th>
+      <th>Asignado</th>
+    </tr>
+  </thead>
+  <tbody id="tbody-calendario">
+    <!-- Aquí se llenará con JS -->
+  </tbody>
+</table>
 
-    const bloque3 = [
-      { inicio: "2026-01-02", fin: "2026-01-16", nombre: "ramon" },
-      { inicio: "2026-01-17", fin: "2026-01-31", nombre: "eugenia" },
-      { inicio: "2026-02-01", fin: "2026-02-15", nombre: "malvina" },
-      { inicio: "2026-02-16", fin: "2026-03-02", nombre: "enrique" }
-    ];
+<script>
+  // Datos de asignaciones (ejemplo)
+  // Bloques con fechas y asignados en orden cíclico (Eugenia, Malvina, Enrique, Ramón)
+  // Vacaciones no asignan persona (vacaciones = 'vacaciones')
 
-    const bloque4 = [
-      { inicio: "2025-07-19", fin: "2025-07-27", nombre: "ramon" },
-      { inicio: "2025-07-28", fin: "2025-08-03", nombre: "malvina" }
-    ];
+  // Asignaciones por bloque, ejemplo
+  // Bloque 1, fechas fijas
+  // Bloque 2, jueves a miércoles
+  // Bloques 3 y 4 fechas fijas
 
-    const bloque2 = [
-      { inicio: "2025-03-08", fin: "2025-03-09", nombre: "enrique" },
-      { inicio: "2025-03-15", fin: "2025-03-16", nombre: "ramon" },
-      { inicio: "2025-03-22", fin: "2025-03-24", nombre: "eugenia" },
-      { inicio: "2025-03-29", fin: "2025-03-30", nombre: "eugenia" },
-      { inicio: "2025-04-05", fin: "2025-04-06", nombre: "malvina" },
-      { inicio: "2025-04-12", fin: "2025-04-13", nombre: "enrique" },
-      { inicio: "2025-04-19", fin: "2025-04-20", nombre: "ramon" },
-      { inicio: "2025-04-26", fin: "2025-04-27", nombre: "eugenia" },
-      { inicio: "2025-05-01", fin: "2025-05-04", nombre: "enrique" },
-      { inicio: "2025-05-10", fin: "2025-05-11", nombre: "malvina" },
-      { inicio: "2025-05-17", fin: "2025-05-18", nombre: "enrique" },
-      { inicio: "2025-05-24", fin: "2025-05-25", nombre: "ramon" },
-      { inicio: "2025-05-31", fin: "2025-06-01", nombre: "eugenia" },
-      { inicio: "2025-06-07", fin: "2025-06-08", nombre: "malvina" },
-      { inicio: "2025-06-14", fin: "2025-06-16", nombre: "ramon" },
-      { inicio: "2025-06-20", fin: "2025-06-22", nombre: "malvina" },
-      { inicio: "2025-06-28", fin: "2025-06-29", nombre: "enrique" },
-      { inicio: "2025-07-05", fin: "2025-07-06", nombre: "ramon" },
-      { inicio: "2025-07-12", fin: "2025-07-13", nombre: "eugenia" },
-      { inicio: "2025-08-09", fin: "2025-08-10", nombre: "malvina" },
-      { inicio: "2025-08-14", fin: "2025-08-15", nombre: "eugenia" },
-      { inicio: "2025-08-23", fin: "2025-08-24", nombre: "enrique" },
-      { inicio: "2025-08-30", fin: "2025-08-31", nombre: "ramon" },
-      { inicio: "2025-09-06", fin: "2025-09-07", nombre: "eugenia" },
-      { inicio: "2025-09-13", fin: "2025-09-14", nombre: "malvina" },
-      { inicio: "2025-09-20", fin: "2025-09-21", nombre: "enrique" },
-      { inicio: "2025-09-27", fin: "2025-09-28", nombre: "ramon" },
-      { inicio: "2025-10-04", fin: "2025-10-05", nombre: "eugenia" },
-      { inicio: "2025-10-11", fin: "2025-10-12", nombre: "malvina" },
-      { inicio: "2025-10-18", fin: "2025-10-19", nombre: "enrique" },
-      { inicio: "2025-10-25", fin: "2025-10-26", nombre: "ramon" },
-      { inicio: "2025-11-01", fin: "2025-11-02", nombre: "eugenia" },
-      { inicio: "2025-11-08", fin: "2025-11-09", nombre: "malvina" },
-      { inicio: "2025-11-15", fin: "2025-11-16", nombre: "enrique" },
-      { inicio: "2025-11-21", fin: "2025-11-24", nombre: "enrique" },
-      { inicio: "2025-11-29", fin: "2025-11-30", nombre: "ramon" },
-      { inicio: "2025-12-06", fin: "2025-12-08", nombre: "ramon" },
-      { inicio: "2025-12-13", fin: "2025-12-14", nombre: "eugenia" },
-      { inicio: "2025-12-20", fin: "2025-12-21", nombre: "malvina" },
-      { inicio: "2025-12-27", fin: "2025-12-28", nombre: "enrique" }
-    ];
+  // Para demo, fechas de agosto 2025
 
-    const tbody = document.querySelector("tbody");
-    const mesActualElem = document.getElementById("mes-actual");
-    const btnPrev = document.getElementById("prevMes");
-    const btnNext = document.getElementById("nextMes");
-
-    btnPrev.onclick = () => {
-      fechaActual.setMonth(fechaActual.getMonth() - 1);
-      if (fechaActual < minFecha) fechaActual = new Date(minFecha);
-      dibujarMes(fechaActual);
-    };
-
-    btnNext.onclick = () => {
-      fechaActual.setMonth(fechaActual.getMonth() + 1);
-      if (fechaActual > maxFecha) fechaActual = new Date(maxFecha);
-      dibujarMes(fechaActual);
-    };
-
-    function dibujarMes(fecha) {
-      tbody.innerHTML = "";
-      const año = fecha.getFullYear();
-      const mes = fecha.getMonth();
-      const primerDia = new Date(año, mes, 1);
-      const ultimoDia = new Date(año, mes + 1, 0);
-      const diaInicio = primerDia.getDay();
-      const diasEnMes = ultimoDia.getDate();
-
-      let fila = document.createElement("tr");
-      for (let i = 0; i < diaInicio; i++) {
-        fila.appendChild(document.createElement("td"));
-      }
-
-      for (let dia = 1; dia <= diasEnMes; dia++) {
-        const celda = document.createElement("td");
-        celda.textContent = dia;
-        const fechaStr = `${año}-${(mes + 1).toString().padStart(2, '0')}-${dia.toString().padStart(2, '0')}`;
-        celda.dataset.fecha = fechaStr;
-        celda.onclick = () => seleccionarFecha(fechaStr);
-        fila.appendChild(celda);
-
-        if ((dia + diaInicio) % 7 === 0) {
-          tbody.appendChild(fila);
-          fila = document.createElement("tr");
-        }
-      }
-
-      if (fila.hasChildNodes()) tbody.appendChild(fila);
-
-      const nombreMes = fecha.toLocaleString("es-ES", { month: "long" });
-      mesActualElem.textContent = `${nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1)} ${año}`;
-      actualizarBotones();
-      limpiarColores();
-      document.getElementById("asignado").textContent = "Seleccioná una fecha para ver la asignación";
+  const bloques = [
+    {
+      nombre: "Bloque 1",
+      fechas: ["2025-08-01", "2025-08-02", "2025-08-03"], // ejemplo
+      asignados: ["Eugenia", "Malvina", "Enrique"]
+    },
+    {
+      nombre: "Bloque 2",
+      // Bloque 2 cubre del jueves al miércoles siguiente para cada asignación
+      fechas: [
+        // Del 7/8 (jueves) al 13/8 (miércoles)
+        { inicio: "2025-08-07", fin: "2025-08-13", asignado: "Ramón" },
+        { inicio: "2025-08-14", fin: "2025-08-20", asignado: "Eugenia" },
+        { inicio: "2025-08-21", fin: "2025-08-27", asignado: "Malvina" },
+        { inicio: "2025-08-28", fin: "2025-09-03", asignado: "Enrique" }
+      ]
+    },
+    {
+      nombre: "Bloque 3",
+      fechas: ["2025-08-04", "2025-08-05", "2025-08-06"],
+      asignados: ["Ramón", "vacaciones", "Malvina"]
     }
+  ];
 
-    function actualizarBotones() {
-      btnPrev.disabled = fechaActual <= minFecha;
-      btnNext.disabled = fechaActual >= maxFecha;
+  // Personas con colores para clase CSS
+  const personas = ["Eugenia", "Malvina", "Enrique", "Ramón", "vacaciones"];
+
+  // Función para crear rango de fechas en un array
+  function fechasEntre(inicioStr, finStr) {
+    const inicio = new Date(inicioStr);
+    const fin = new Date(finStr);
+    const fechas = [];
+    for(let d = new Date(inicio); d <= fin; d.setDate(d.getDate() + 1)) {
+      fechas.push(new Date(d));
     }
+    return fechas;
+  }
 
-    function seleccionarFecha(fechaStr) {
-      limpiarColores();
-      const fechaSeleccionada = new Date(fechaStr);
-      let encontrado = false;
+  // Función para formatear fecha a yyyy-mm-dd
+  function formatFecha(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
 
-      for (const grupo of [bloque1, bloque3, bloque4]) {
-        for (const r of grupo) {
-          const inicio = new Date(r.inicio);
-          const fin = new Date(r.fin);
-          if (fechaSeleccionada >= inicio && fechaSeleccionada <= fin) {
-            pintarRango(inicio, fin, r.nombre);
-            document.getElementById("asignado").textContent = `Bloque asignado: ${capitalizar(r.nombre)} del ${formatear(inicio)} al ${formatear(fin)}`;
-            encontrado = true;
-            return;
-          }
-        }
+  // Crear listado completo de fechas a mostrar
+  // Vamos a juntar todas las fechas de bloques
+  function obtenerFechasTotales() {
+    const fechasSet = new Set();
+
+    bloques.forEach(bloque => {
+      if (bloque.fechas) {
+        bloque.fechas.forEach(f => fechasSet.add(f));
+      } else if (bloque.fechas instanceof Array) {
+        // Ya manejado
+      } else if (bloque.fechas && bloque.fechas.length === undefined && bloque.fechas.inicio) {
+        // Nada para acá
       }
 
-      for (const r of bloque2) {
-        let inicio = new Date(r.inicio);
-        let fin = new Date(r.fin);
-        if (inicio > fin) [inicio, fin] = [fin, inicio];
-        const jueves = obtenerJuevesAnterior(inicio);
-        const miercoles = obtenerMiercolesSiguiente(fin);
-        if (fechaSeleccionada >= jueves && fechaSeleccionada <= miercoles) {
-          pintarRango(jueves, miercoles, r.nombre);
-          document.getElementById("asignado").textContent = `Bloque 2: ${capitalizar(r.nombre)} asignado del ${formatear(jueves)} al ${formatear(miercoles)}`;
-          encontrado = true;
-          return;
-        }
+      if (bloque.nombre === "Bloque 2") {
+        bloque.fechas.forEach(rango => {
+          fechasEntre(rango.inicio, rango.fin).forEach(fechad => fechasSet.add(formatFecha(fechad)));
+        });
       }
+    });
 
-      if (!encontrado) {
-        document.getElementById("asignado").textContent = `No hay asignación para la fecha seleccionada`;
-      }
-    }
+    // Convertir a array y ordenar ascendente
+    return Array.from(fechasSet).sort();
+  }
 
-    function pintarRango(inicio, fin, nombre) {
-      const celdas = document.querySelectorAll("td");
-      for (const celda of celdas) {
-        const f = celda.dataset.fecha;
-        if (!f) continue;
-        const fechaCelda = new Date(f);
-        if (fechaCelda >= inicio && fechaCelda <= fin) {
-          celda.classList.add("highlight", colores[nombre]);
+  // Función para obtener asignado para una fecha dada
+  function obtenerAsignado(fechaStr) {
+    // Primero, buscar en bloque 2 si la fecha cae en algún rango
+    const bloque2 = bloques.find(b => b.nombre === "Bloque 2");
+    if (bloque2) {
+      for (const rango of bloque2.fechas) {
+        if (fechaStr >= rango.inicio && fechaStr <= rango.fin) {
+          return rango.asignado;
         }
       }
     }
+    // Si no está en bloque 2, buscar en otros bloques
+    for (const bloque of bloques) {
+      if (bloque.nombre === "Bloque 2") continue;
+      if (bloque.fechas && bloque.asignados) {
+        const index = bloque.fechas.indexOf(fechaStr);
+        if (index !== -1) {
+          return bloque.asignados[index];
+        }
+      }
+    }
+    // Si no está asignado
+    return "";
+  }
 
-    function limpiarColores() {
-      document.querySelectorAll("td").forEach(td =>
-        td.classList.remove("highlight", "eugenia", "malvina", "ramon", "enrique", "conflicto2", "conflicto3", "conflicto4", "conflictoX")
-      );
+  // Mostrar calendario
+  function mostrarCalendario() {
+    const tbody = document.getElementById("tbody-calendario");
+    tbody.innerHTML = "";
+
+    const fechasTotales = obtenerFechasTotales();
+
+    fechasTotales.forEach(fechaStr => {
+      const tr = document.createElement("tr");
+      const fechaObj = new Date(fechaStr);
+
+      // Día de la semana (en español)
+      const diasSemana = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+      const diaSemana = diasSemana[fechaObj.getDay()];
+
+      const tdFecha = document.createElement("td");
+      tdFecha.textContent = fechaStr;
+
+      const tdDia = document.createElement("td");
+      tdDia.textContent = diaSemana;
+
+      const tdAsignado = document.createElement("td");
+
+      const asignado = obtenerAsignado(fechaStr);
+      tdAsignado.textContent = asignado !== "vacaciones" ? asignado : "Vacaciones";
+
+      // Asignar clase para color
+      if (personas.includes(asignado)) {
+        tdAsignado.classList.add(asignado);
+        tdAsignado.classList.add("asignado");
+      }
+      if (asignado === "vacaciones") {
+        tdAsignado.classList.add("vacaciones");
+      }
+
+      // Click para seleccionar bloque 2 desde jueves a miércoles
+      tr.dataset.fecha = fechaStr;
+      tr.addEventListener("click", () => onSeleccionarFecha(fechaStr));
+
+      tr.appendChild(tdFecha);
+      tr.appendChild(tdDia);
+      tr.appendChild(tdAsignado);
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Cuando se selecciona una fecha en el calendario
+  function onSeleccionarFecha(fechaStr) {
+    // Para el bloque 2, seleccionar el rango jueves a miércoles
+    // Si la fecha no está en bloque 2, solo se selecciona la fecha
+
+    // Limpiar selección previa
+    document.querySelectorAll("#tbody-calendario tr").forEach(tr => {
+      tr.classList.remove("seleccionado");
+    });
+
+    // Verificar si fecha está en bloque 2 rango
+    const bloque2 = bloques.find(b => b.nombre === "Bloque 2");
+    let rangoSeleccionado = null;
+
+    if (bloque2) {
+      for (const rango of bloque2.fechas) {
+        if (fechaStr >= rango.inicio && fechaStr <= rango.fin) {
+          rangoSeleccionado = rango;
+          break;
+        }
+      }
     }
 
-    function obtenerJuevesAnterior(fecha) {
-      const copia = new Date(fecha);
-      while (copia.getDay() !== 4) copia.setDate(copia.getDate() - 1);
-      return copia;
-    }
+    if (rangoSeleccionado) {
+      // Seleccionar todas las filas que estén entre rango.inicio y rango.fin
+      document.querySelectorAll("#tbody-calendario tr").forEach(tr => {
+        const f = tr.dataset.fecha;
+        if (f >= rangoSeleccionado.inicio && f <= rangoSeleccionado.fin) {
+          tr.classList.add("seleccionado");
+        }
+      });
+      alert(`Bloque 2 asignado a: ${rangoSeleccionado.asignado}\nDesde ${rangoSeleccionado.inicio} hasta ${rangoSeleccionado.fin}`);
+    } else {
+      // Solo seleccionar la fila clickeada
+      const fila = document.querySelector(`#tbody-calendario tr[data-fecha="${fechaStr}"]`);
+      if (fila) fila.classList.add("seleccionado");
 
-    function obtenerMiercolesSiguiente(fecha) {
-      const copia = new Date(fecha);
-      while (copia.getDay() !== 3) copia.setDate(copia.getDate() + 1);
-      return copia;
+      const asignado = obtenerAsignado(fechaStr);
+      alert(`Fecha: ${fechaStr}\nAsignado: ${asignado !== "vacaciones" ? asignado : "Vacaciones"}`);
     }
+  }
 
-    function formatear(fecha) {
-      const d = fecha.getDate().toString().padStart(2, "0");
-      const m = (fecha.getMonth() + 1).toString().padStart(2, "0");
-      const y = fecha.getFullYear();
-      return `${d}/${m}/${y}`;
-    }
+  mostrarCalendario();
 
-    function capitalizar(txt) {
-      return txt.charAt(0).toUpperCase() + txt.slice(1);
-    }
+</script>
 
-    dibujarMes(fechaActual);
-  </script>
 </body>
 </html>
