@@ -6,7 +6,7 @@
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f5f5f5;
+      background-color: #f0f0f0;
       color: #222;
       padding: 20px;
     }
@@ -22,29 +22,11 @@
       border-radius: 6px;
       cursor: pointer;
     }
-    .vacaciones {
-      background-color: #007acc;
-      color: white;
-    }
-    .bloque2 {
-      background-color: #ffaa00;
-      color: black;
-    }
-    .bloque3 {
-      background-color: #88cc00;
-      color: black;
-    }
-    .bloque4 {
-      background-color: #cc66cc;
-      color: white;
-    }
-    .no-asignado {
-      background-color: #ddd;
-      color: #666;
-    }
-    .hoy {
-      border: 2px solid #222;
-    }
+    .vacaciones { background-color: #007acc; color: white; }
+    .bloque2    { background-color: #ffaa00; color: black; }
+    .bloque3    { background-color: #88cc00; color: black; }
+    .bloque4    { background-color: #cc66cc; color: white; }
+    .no-asignado { background-color: #ddd; color: #666; }
     #resultado {
       margin-top: 15px;
       padding: 10px;
@@ -54,6 +36,11 @@
     }
     #mesControles {
       margin-top: 10px;
+    }
+    #mesControles button {
+      padding: 6px 10px;
+      margin: 0 5px;
+      font-size: 16px;
     }
   </style>
 </head>
@@ -67,7 +54,7 @@
   <div id="calendario"></div>
   <div id="resultado"></div>
 
-  <script>
+<script>
 const bloques = [
   {
     nombre: "Vacaciones",
@@ -133,6 +120,16 @@ function mesSiguiente() {
   renderizarCalendario();
 }
 
+function extenderBloque2(fecha) {
+  const diaSemana = fecha.getDay(); // jueves = 4
+  const diferencia = (diaSemana >= 4) ? diaSemana - 4 : 7 - (4 - diaSemana);
+  const inicio = new Date(fecha);
+  inicio.setDate(fecha.getDate() - diferencia);
+  const fin = new Date(inicio);
+  fin.setDate(inicio.getDate() + 6);
+  return [inicio, fin];
+}
+
 function renderizarCalendario() {
   const calendario = document.getElementById("calendario");
   const mesLabel = document.getElementById("mesActual");
@@ -159,7 +156,7 @@ function renderizarCalendario() {
     dia.classList.add("dia");
 
     let asignado = null;
-    let prioridadMasAlta = Infinity;
+    let prioridadActual = Infinity;
 
     bloques.forEach(bloque => {
       bloque.asignaciones.forEach(asignacion => {
@@ -167,12 +164,12 @@ function renderizarCalendario() {
         let fin = new Date(asignacion.fin);
 
         if (bloque.nombre === "Bloque 2") {
-          const rango = extenderBloque2(fecha);
-          inicio = rango[0];
-          fin = rango[1];
+          const rangoExtendido = extenderBloque2(inicio);
+          inicio = rangoExtendido[0];
+          fin = rangoExtendido[1];
         }
 
-        if (fecha >= inicio && fecha <= fin && bloque.prioridad < prioridadMasAlta) {
+        if (fecha >= inicio && fecha <= fin && bloque.prioridad < prioridadActual) {
           asignado = {
             nombre: asignacion.nombre,
             clase: bloque.clase,
@@ -180,7 +177,7 @@ function renderizarCalendario() {
             desde: asignacion.inicio,
             hasta: asignacion.fin
           };
-          prioridadMasAlta = bloque.prioridad;
+          prioridadActual = bloque.prioridad;
         }
       });
     });
@@ -197,17 +194,9 @@ function renderizarCalendario() {
 
     dia.textContent = d;
     calendario.appendChild(dia);
-  }
-}
+    }
 
-function extenderBloque2(fecha) {
-  const diaSemana = fecha.getDay(); // domingo = 0 ... jueves = 4
-  const diferencia = (diaSemana >= 4) ? diaSemana - 4 : 7 - (4 - diaSemana);
-  const inicio = new Date(fecha);
-  inicio.setDate(fecha.getDate() - diferencia);
-  const fin = new Date(inicio);
-  fin.setDate(inicio.getDate() + 6);
-  return [inicio, fin];
+  // Termina el bucle de los días
 }
 
 renderizarCalendario();
