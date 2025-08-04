@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Sorteo Isla 2025</title>
+  <style>
+    body {
+      background-color: #e0ecf3;
+      color: #1a1a1a;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #2d6cdf;
+    }
+
+    .navigation button {
+      margin: 5px;
+      padding: 8px 12px;
+      background-color: #2d6cdf;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    table {
+      margin: auto;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #aec8e8;
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    td:hover {
+      background-color: #8ab4f8;
+      color: #1a1a1a;
+    }
+
+    .selected {
+      font-weight: bold;
+      background-color: #ffecb3;
+    }
+
+    #respuesta {
+      margin-top: 20px;
+      font-size: 1.1em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sorteo Isla 2025</h1>
+  <div class="navigation">
+    <button onclick="cambiarMes(-1)">← Mes anterior</button>
+    <span id="mesAnio"></span>
+    <button onclick="cambiarMes(1)">Mes siguiente →</button>
+  </div>
+  <div id="calendario"></div>
+  <div id="respuesta"></div>
+
+  <script>
+    const asignaciones = {
+      "2025-01-04": "Enrique",
+      "2025-01-05": "Enrique",
+      "2025-01-11": "Ramon",
+      "2025-01-12": "Ramon",
+      "2025-01-25": "Eugenia",
+      "2025-01-26": "Eugenia",
+      "2025-02-01": "Malvina",
+      "2025-02-02": "Malvina",
+      "2025-02-08": "Enrique",
+      "2025-02-09": "Enrique",
+      "2025-02-15": "Ramon",
+      "2025-02-16": "Ramon",
+      "2025-02-22": "Eugenia",
+      "2025-02-23": "Eugenia",
+      "2025-03-08": "Enrique",
+      "2025-03-09": "Enrique",
+      "2025-03-15": "Ramon",
+      "2025-03-16": "Ramon",
+      "2025-03-29": "Eugenia",
+      "2025-03-30": "Eugenia"
+    };
+
+    let mesActual = 0; // Enero
+    let añoActual = 2025;
+
+    function generarCalendario(mes, año) {
+      const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+      const primerDiaMes = new Date(año, mes, 1);
+      const ultimoDiaMes = new Date(año, mes + 1, 0);
+      const diasMes = ultimoDiaMes.getDate();
+
+      let html = '<table><tr>' + diasSemana.map(d => `<th>${d}</th>`).join('') + '</tr><tr>';
+      let diaSemana = primerDiaMes.getDay();
+
+      for (let i = 0; i < diaSemana; i++) html += '<td></td>';
+
+      for (let dia = 1; dia <= diasMes; dia++) {
+        const fechaStr = `${año}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+        html += `<td onclick="seleccionarDia('${fechaStr}', this)">${dia}</td>`;
+        if ((dia + diaSemana) % 7 === 0) html += '</tr><tr>';
+      }
+
+      html += '</tr></table>';
+      document.getElementById('calendario').innerHTML = html;
+      document.getElementById('mesAnio').textContent =
+        `${primerDiaMes.toLocaleDateString('es-ES', { month: 'long' })} ${año}`;
+    }
+
+    function seleccionarDia(fechaStr, celda) {
+      document.querySelectorAll("td").forEach(td => {
+        td.classList.remove("selected");
+      });
+
+      celda.classList.add("selected");
+      const persona = asignaciones[fechaStr];
+      document.getElementById('respuesta').textContent =
+        persona ? `📅 ${fechaStr} le toca a ${persona}` : `📅 ${fechaStr} no tiene asignación registrada`;
+    }
+
+    function cambiarMes(valor) {
+      mesActual += valor;
+      if (mesActual < 0) {
+        mesActual = 11;
+        añoActual -= 1;
+      } else if (mesActual > 11) {
+        mesActual = 0;
+        añoActual += 1;
+      }
+      generarCalendario(mesActual, añoActual);
+    }
+
+    generarCalendario(mesActual, añoActual);
+  </script>
+</body>
+</html>
