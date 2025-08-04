@@ -18,8 +18,8 @@
       margin-bottom: 10px;
     }
     #calendar {
-      width: 100%;
       max-width: 500px;
+      width: 100%;
     }
     .grid {
       display: grid;
@@ -68,7 +68,7 @@
       "2025-08-07": "Persona1",
       "2025-08-14": "Persona2",
       "2025-08-21": "Persona3"
-      // Agregar más fechas según necesidad
+      // Agregá más fechas según lo que necesites
     };
 
     function renderCalendar() {
@@ -86,34 +86,18 @@
 
       for (let d = 1; d <= daysInMonth; d++) {
         const fullDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-        const fechaObj = new Date(currentYear, currentMonth, d);
         const div = document.createElement('div');
         div.className = 'day';
         div.textContent = d;
-        div.dataset.fecha = fullDate;
 
-        calendarGrid.appendChild(div);
-      }
-
-      for (const fechaTurno in turnos) {
-        const persona = turnos[fechaTurno];
-        const fechaBase = new Date(fechaTurno);
-        const diaSemana = fechaBase.getDay();
-        const juevesOffset = ((diaSemana + 3) % 7);
-        const inicioRango = new Date(fechaBase);
-        inicioRango.setDate(fechaBase.getDate() - juevesOffset);
-
-        for (let i = 0; i <= 6; i++) {
-          const diaRango = new Date(inicioRango);
-          diaRango.setDate(inicioRango.getDate() + i);
-          const fechaRango = `${diaRango.getFullYear()}-${String(diaRango.getMonth() + 1).padStart(2,'0')}-${String(diaRango.getDate()).padStart(2,'0')}`;
-
-          const elemento = document.querySelector(`[data-fecha="${fechaRango}"]`);
-          if (elemento) {
-            elemento.classList.add(persona.toLowerCase());
-            elemento.dataset.persona = persona;
-          }
+        const persona = turnos[fullDate];
+        if (persona) {
+          div.classList.add(persona.toLowerCase());
+          div.dataset.persona = persona;
         }
+
+        div.onclick = () => seleccionarPersona(fullDate);
+        calendarGrid.appendChild(div);
       }
     }
 
