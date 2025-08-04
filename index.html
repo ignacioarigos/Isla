@@ -83,10 +83,10 @@
       outline: 2px solid #000;
     }
 
-    .eugenia { background-color: var(--eugenia); color: white; }
-    .enrique { background-color: var(--enrique); color: white; }
-    .ramon   { background-color: var(--ramon);   color: white; }
-    .malvina { background-color: var(--malvina); color: white; }
+    .eugenia  { background-color: var(--eugenia); color: white; }
+    .enrique  { background-color: var(--enrique); color: white; }
+    .ramon    { background-color: var(--ramon);   color: white; }
+    .malvina  { background-color: var(--malvina); color: white; }
   </style>
 </head>
 <body>
@@ -107,7 +107,15 @@
     const year = 2025;
 
     const turnos = {
-      // (tu objeto de turnos va acá, igual al que ya definimos)
+      // Pega acá el objeto de turnos completo que ya definimos anteriormente
+      "2025-03-22":"Eugenia","2025-03-23":"Eugenia","2025-03-24":"Eugenia",
+      "2025-05-01":"Enrique","2025-05-02":"Enrique","2025-05-03":"Enrique","2025-05-04":"Enrique",
+      "2025-06-14":"Ramon","2025-06-15":"Ramon","2025-06-16":"Ramon",
+      "2025-06-20":"Malvina","2025-06-21":"Malvina","2025-06-22":"Malvina",
+      "2025-08-15":"Eugenia","2025-08-16":"Eugenia","2025-08-17":"Eugenia",
+      "2025-11-21":"Enrique","2025-11-22":"Enrique","2025-11-23":"Enrique","2025-11-24":"Enrique",
+      "2025-12-06":"Ramon","2025-12-07":"Ramon","2025-12-08":"Ramon",
+      // (Y todos los fines de semana comunes según tus datos)
     };
 
     function renderCalendar() {
@@ -142,10 +150,9 @@
     }
 
     function seleccionarPersona(fecha) {
-      // limpiar todo antes
-      document.querySelectorAll('.day').forEach(d => {
-        d.classList.remove('selected','eugenia','enrique','ramon','malvina');
-      });
+      document.querySelectorAll('.day').forEach(d =>
+        d.classList.remove('selected','eugenia','enrique','ramon','malvina')
+      );
 
       const persona = turnos[fecha];
       if (!persona) {
@@ -156,7 +163,7 @@
       infoBox.textContent = persona;
 
       const baseDate = new Date(fecha);
-      const diaSemana = baseDate.getDay(); // 0 = dom...6 = sáb
+      const diaSemana = baseDate.getDay(); // 0=domingo…6=sábado
       const offset = (diaSemana >= 4) ? diaSemana - 4 : diaSemana + 3;
       const inicio = new Date(baseDate);
       inicio.setDate(baseDate.getDate() - offset);
@@ -165,11 +172,8 @@
         const dia = new Date(inicio);
         dia.setDate(inicio.getDate() + i);
         const diaStr = `${dia.getFullYear()}-${String(dia.getMonth()+1).padStart(2,'0')}-${String(dia.getDate()).padStart(2,'0')}`;
-
         const div = document.querySelector(`[data-fecha="${diaStr}"]`);
-        if (div) {
-          div.classList.add(persona.toLowerCase());
-        }
+        if (div) div.classList.add(persona.toLowerCase());
       }
     }
 
