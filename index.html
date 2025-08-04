@@ -2,177 +2,148 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Turnos – Isla 2025</title>
+  <title>Calendario de Bloques</title>
   <style>
-    :root {
-      --eugenia: #9e85e4;
-      --enrique: #4caf50;
-      --ramon: #ff9800;
-      --malvina: #f76a6a;
-      --bg: #f4f6f9;
-      --text: #1c1c1c;
-    }
     body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      padding: 20px;
+      font-family: sans-serif;
+      background-color: #1e1e1e;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     h1 {
-      text-align: center;
-      font-size: 1.8rem;
-      margin-bottom: 20px;
+      margin-top: 20px;
     }
-    .nav {
-      text-align: center;
-      margin-bottom: 10px;
+    table {
+      border-collapse: collapse;
+      margin: 20px 0;
     }
-    .nav button {
-      background-color: #e0e0e0;
-      border: none;
-      border-radius: 6px;
-      padding: 6px 12px;
-      margin: 0 5px;
-      font-size: 0.9rem;
+    td {
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      border: 1px solid #555;
       cursor: pointer;
     }
-    .calendar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-      max-width: 600px;
-      margin: auto;
-    }
-    .day-name {
-      text-align: center;
+    .highlight {
+      background: linear-gradient(to bottom right, orange, darkorange);
+      color: black;
       font-weight: bold;
-      font-size: 0.8rem;
     }
-    .day {
-      background-color: white;
-      border-radius: 6px;
-      height: 50px;
-      text-align: center;
-      padding-top: 6px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: background 0.2s;
+    #info {
+      margin: 10px;
+      font-weight: bold;
     }
-    .day:hover {
-      border-color: #d0d0d0;
-    }
-    .info {
-      text-align: center;
-      margin-top: 16px;
-      font-size: 1rem;
-    }
-    .selected {
-      outline: 2px solid #000;
-    }
-    .eugenia  { background-color: var(--eugenia); color: white; }
-    .enrique  { background-color: var(--enrique); color: white; }
-    .ramon    { background-color: var(--ramon);   color: white; }
-    .malvina  { background-color: var(--malvina); color: white; }
   </style>
 </head>
 <body>
-  <h1>Turnos – Isla 2025</h1>
-  <div class="nav">
-    <button onclick="prevMonth()">◀</button>
-    <span id="monthLabel">Enero 2025</span>
-    <button onclick="nextMonth()">▶</button>
-  </div>
-  <div class="calendar" id="calendarGrid"></div>
-  <div class="info" id="infoBox">Seleccioná un día</div>
+  <h1>Calendario 2025–2026</h1>
+  <div id="info">Selecciona un día</div>
+  <table id="calendario"></table>
 
   <script>
-    const calendarGrid = document.getElementById('calendarGrid');
-    const monthLabel = document.getElementById('monthLabel');
-    const infoBox = document.getElementById('infoBox');
-    let currentMonth = 0;
-    const year = 2025;
-
     const bloques = [
       { desde: "2025-01-02", hasta: "2025-01-16", persona: "Eugenia" },
       { desde: "2025-01-17", hasta: "2025-01-31", persona: "Malvina" },
-      { desde: "2025-02-01", hasta: "2025-02-16", persona: "Enrique" },
-      { desde: "2025-02-16", hasta: "2025-03-02", persona: "Ramon" },
-      { desde: "2025-07-19", hasta: "2025-07-27", persona: "Ramon" },
-      { desde: "2025-07-28", hasta: "2025-08-03", persona: "Malvina" }
+      { desde: "2025-02-01", hasta: "2025-02-15", persona: "Enrique" },
+      { desde: "2025-02-16", hasta: "2025-03-02", persona: "Ramón" },
+      { desde: "2025-03-08", hasta: "2025-03-09", persona: "Enrique" },
+      { desde: "2025-03-15", hasta: "2025-03-16", persona: "Ramón" },
+      { desde: "2025-03-22", hasta: "2025-03-24", persona: "Eugenia" },
+      { desde: "2025-03-29", hasta: "2025-03-30", persona: "Eugenia" },
+      { desde: "2025-04-05", hasta: "2025-04-06", persona: "Malvina" },
+      { desde: "2025-04-12", hasta: "2025-04-13", persona: "Enrique" },
+      { desde: "2025-04-19", hasta: "2025-04-20", persona: "Ramón" },
+      { desde: "2025-04-26", hasta: "2025-04-27", persona: "Eugenia" },
+      { desde: "2025-05-01", hasta: "2025-05-04", persona: "Enrique" },
+      { desde: "2025-05-10", hasta: "2025-05-11", persona: "Malvina" },
+      { desde: "2025-05-17", hasta: "2025-05-18", persona: "Enrique" },
+      { desde: "2025-05-24", hasta: "2025-05-25", persona: "Ramón" },
+      { desde: "2025-05-31", hasta: "2025-06-01", persona: "Eugenia" },
+      { desde: "2025-06-07", hasta: "2025-06-08", persona: "Malvina" },
+      { desde: "2025-06-14", hasta: "2025-06-16", persona: "Ramón" },
+      { desde: "2025-06-20", hasta: "2025-06-22", persona: "Malvina" },
+      { desde: "2025-06-28", hasta: "2025-06-29", persona: "Enrique" },
+      { desde: "2025-07-05", hasta: "2025-07-06", persona: "Ramón" },
+      { desde: "2025-07-12", hasta: "2025-07-13", persona: "Eugenia" },
+      { desde: "2025-07-19", hasta: "2025-07-27", persona: "Ramón" },
+      { desde: "2025-07-28", hasta: "2025-08-03", persona: "Malvina" },
+      { desde: "2025-08-09", hasta: "2025-08-10", persona: "Malvina" },
+      { desde: "2025-08-15", hasta: "2025-08-14", persona: "Eugenia" }, // Revisar este rango invertido
+      { desde: "2025-08-23", hasta: "2025-08-24", persona: "Enrique" },
+      { desde: "2025-08-30", hasta: "2025-08-31", persona: "Ramón" },
+      { desde: "2025-09-06", hasta: "2025-09-07", persona: "Eugenia" },
+      { desde: "2025-09-13", hasta: "2025-09-14", persona: "Malvina" },
+      { desde: "2025-09-20", hasta: "2025-09-21", persona: "Enrique" },
+      { desde: "2025-09-27", hasta: "2025-09-28", persona: "Ramón" },
+      { desde: "2025-10-04", hasta: "2025-10-05", persona: "Eugenia" },
+      { desde: "2025-10-11", hasta: "2025-10-12", persona: "Malvina" },
+      { desde: "2025-10-18", hasta: "2025-10-19", persona: "Enrique" },
+      { desde: "2025-10-25", hasta: "2025-10-26", persona: "Ramón" },
+      { desde: "2025-11-01", hasta: "2025-11-02", persona: "Eugenia" },
+      { desde: "2025-11-08", hasta: "2025-11-09", persona: "Malvina" },
+      { desde: "2025-11-15", hasta: "2025-11-16", persona: "Enrique" },
+      { desde: "2025-11-21", hasta: "2025-11-24", persona: "Enrique" },
+      { desde: "2025-11-29", hasta: "2025-11-30", persona: "Ramón" },
+      { desde: "2025-12-06", hasta: "2025-12-08", persona: "Ramón" },
+      { desde: "2025-12-13", hasta: "2025-12-14", persona: "Eugenia" },
+      { desde: "2025-12-20", hasta: "2025-12-21", persona: "Malvina" },
+      { desde: "2025-12-27", hasta: "2025-12-28", persona: "Enrique" },
+      { desde: "2026-01-02", hasta: "2026-01-16", persona: "Ramón" },
+      { desde: "2026-01-17", hasta: "2026-01-31", persona: "Eugenia" },
+      { desde: "2026-02-01", hasta: "2026-02-15", persona: "Malvina" },
+      { desde: "2026-02-16", hasta: "2026-03-02", persona: "Enrique" }
     ];
 
-    function renderCalendar() {
-      calendarGrid.innerHTML = '';
-      const date = new Date(year, currentMonth, 1);
-      const monthName = date.toLocaleString('es-ES', { month: 'long' });
-      monthLabel.textContent = `${capitalize(monthName)} ${year}`;
+    const calendario = document.getElementById("calendario");
+    const info = document.getElementById("info");
 
-      const startDay = new Date(year, currentMonth, 1).getDay();
-      const daysInMonth = new Date(year, currentMonth + 1, 0).getDate();
-
-      ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].forEach(name => {
-        const nameDiv = document.createElement('div');
-        nameDiv.className = 'day-name';
-        nameDiv.textContent = name;
-        calendarGrid.appendChild(nameDiv);
-      });
-
-      for (let i = 0; i < startDay; i++) {
-        calendarGrid.appendChild(document.createElement('div'));
+    const generarCalendario = (anio = 2025) => {
+      for (let mes = 0; mes < 12; mes++) {
+        let fila = document.createElement("tr");
+        for (let dia = 1; dia <= 31; dia++) {
+          const fecha = new Date(anio, mes, dia);
+          if (fecha.getMonth() !== mes) continue;
+          const td = document.createElement("td");
+          td.textContent = dia;
+          td.dataset.fecha = fecha.toISOString().split("T")[0];
+          td.addEventListener("click", () => seleccionarBloque(td.dataset.fecha));
+          fila.appendChild(td);
+        }
+        calendario.appendChild(fila);
       }
+    };
 
-      for (let d = 1; d <= daysInMonth; d++) {
-        const fullDate = `${year}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        const div = document.createElement('div');
-        div.className = 'day';
-        div.textContent = d;
-        div.dataset.fecha = fullDate;
-        div.onclick = () => seleccionarBloque(fullDate);
-        calendarGrid.appendChild(div);
-      }
-    }
+    const seleccionarBloque = (fechaStr) => {
+      document.querySelectorAll("td").forEach(td => td.classList.remove("highlight"));
+      const fecha = new Date(fechaStr);
+            const seleccionarBloque = (fechaStr) => {
+        document.querySelectorAll("td").forEach(td => td.classList.remove("highlight"));
+        const fecha = new Date(fechaStr);
 
-    function seleccionarBloque(fecha) {
-      document.querySelectorAll('.day').forEach(d =>
-        d.classList.remove('selected','eugenia','enrique','ramon','malvina')
-      );
+        for (const bloque of bloques) {
+          const desde = new Date(bloque.desde);
+          const hasta = new Date(bloque.hasta);
 
-      const bloque = bloques.find(b => fecha >= b.desde && fecha <= b.hasta);
-      if (!bloque) {
-        infoBox.textContent = 'Sin asignación';
-        return;
-      }
+          if (fecha >= desde && fecha <= hasta) {
+            document.querySelectorAll("td").forEach(td => {
+              const tdFecha = new Date(td.dataset.fecha);
+              if (tdFecha >= desde && tdFecha <= hasta) {
+                td.classList.add("highlight");
+              }
+            });
+            info.textContent = `🔸 Este bloque es de ${bloque.persona} (${bloque.desde} al ${bloque.hasta})`;
+            return;
+          }
+        }
 
-      infoBox.textContent = bloque.persona;
+        info.textContent = "❌ Esta fecha no pertenece a ningún bloque definido.";
+      };
 
-      const inicio = new Date(bloque.desde);
-      const fin = new Date(bloque.hasta);
-
-      for (let d = new Date(inicio); d <= fin; d.setDate(d.getDate() + 1)) {
-        const diaStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        const div = document.querySelector(`[data-fecha="${diaStr}"]`);
-        if (div) div.classList.add(bloque.persona.toLowerCase());
-      }
-    }
-
-    function nextMonth() {
-      if (currentMonth < 11) currentMonth++;
-      renderCalendar();
-    }
-
-    function prevMonth() {
-      if (currentMonth > 0) currentMonth--;
-      renderCalendar();
-    }
-
-    function capitalize(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-
-    renderCalendar();
+      // Generar calendario completo para 2025 y 2026
+      generarCalendario(2025);
+      generarCalendario(2026);
   </script>
 </body>
 </html>
