@@ -3,138 +3,119 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Isla 2025</title>
+  <title>Isla – Calendario 2025</title>
   <style>
     :root {
       --eugenia: #9e85e4;
       --enrique: #4caf50;
       --ramon: #ff9800;
       --malvina: #f76a6a;
-      --bg: #f9f9fb;
-      --text: #2a2a2a;
+      --bg: #f4f6f9;
+      --text: #1c1c1c;
     }
 
     body {
       margin: 0;
-      background-color: var(--bg);
       font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg);
       color: var(--text);
       padding: 20px;
     }
 
     h1 {
       text-align: center;
-      font-size: 2rem;
-      margin-bottom: 10px;
-    }
-
-    #calendar {
-      max-width: 800px;
-      margin: 0 auto;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
     }
 
     .nav {
       text-align: center;
-      margin: 20px 0;
+      margin-bottom: 10px;
     }
 
     .nav button {
       background-color: #e0e0e0;
       border: none;
       border-radius: 6px;
-      padding: 8px 12px;
+      padding: 6px 12px;
       margin: 0 5px;
-      font-size: 1rem;
+      font-size: 0.9rem;
       cursor: pointer;
     }
 
-    .month-grid {
+    .calendar {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
+      gap: 6px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .day-name {
+      text-align: center;
+      font-weight: bold;
+      font-size: 0.8rem;
     }
 
     .day {
-      background: #fff;
-      border-radius: 8px;
-      padding: 10px;
+      background-color: white;
+      border-radius: 6px;
+      height: 50px;
       text-align: center;
+      padding-top: 6px;
+      font-size: 0.9rem;
       cursor: pointer;
       border: 2px solid transparent;
-      min-height: 50px;
     }
 
     .day:hover {
-      border-color: #ddd;
+      border-color: #d0d0d0;
     }
 
     .eugenia  { background-color: var(--eugenia); color: white; }
     .enrique  { background-color: var(--enrique); color: white; }
-    .ramon    { background-color: var(--ramon);   color: white; }
+    .ramon    { background-color: var(--ramon); color: white; }
     .malvina  { background-color: var(--malvina); color: white; }
 
     .selected {
-      outline: 3px solid #000;
+      outline: 2px solid #000;
     }
 
     .info {
       text-align: center;
-      margin-top: 20px;
-      font-size: 1.1rem;
-    }
-
-    .day-name {
-      font-weight: bold;
-      font-size: 0.9rem;
-      text-align: center;
-      margin-bottom: 4px;
+      margin-top: 16px;
+      font-size: 1rem;
     }
   </style>
 </head>
 <body>
-  <h1>Turnos Isla – 2025</h1>
+  <h1>Turnos – Isla 2025</h1>
   <div class="nav">
-    <button onclick="prevMonth()">◀ Anterior</button>
+    <button onclick="prevMonth()">◀</button>
     <span id="monthLabel">Enero 2025</span>
-    <button onclick="nextMonth()">Siguiente ▶</button>
+    <button onclick="nextMonth()">▶</button>
   </div>
-  <div id="calendar">
-    <div class="month-grid" id="calendarGrid"></div>
-    <div class="info" id="infoBox">Seleccioná un día para ver a quién le corresponde</div>
-  </div>
+  <div class="calendar" id="calendarGrid"></div>
+  <div class="info" id="infoBox">Seleccioná un día</div>
 
   <script>
     const calendarGrid = document.getElementById('calendarGrid');
     const monthLabel = document.getElementById('monthLabel');
     const infoBox = document.getElementById('infoBox');
 
-    let currentMonth = 0; // Enero
+    let currentMonth = 0;
     const year = 2025;
 
-    const personas = {
-      'Eugenia': '#9e85e4',
-      'Enrique': '#4caf50',
-      'Ramón': '#ff9800',
-      'Malvina': '#f76a6a'
-    };
-
-    // Datos simplificados de turnos (ejemplo)
     const turnos = {
-      // formato: "YYYY-MM-DD": "Persona"
-      "2025-03-22": "Eugenia",
-      "2025-03-23": "Eugenia",
-      "2025-03-24": "Eugenia",
-      "2025-05-01": "Enrique",
-      "2025-05-02": "Enrique",
-      "2025-05-03": "Enrique",
-      "2025-05-04": "Enrique",
-      "2025-06-14": "Ramón",
-      "2025-06-15": "Ramón",
-      "2025-06-16": "Ramón",
-      "2025-06-20": "Malvina",
-      "2025-06-21": "Malvina",
-      "2025-06-22": "Malvina"
-      // Podés seguir agregando más fechas
+      // ← ¡Aquí irán todas las fechas del 2025!
+      "2025-03-22": "Eugenia", "2025-03-23": "Eugenia", "2025-03-24": "Eugenia",
+      "2025-05-01": "Enrique", "2025-05-02": "Enrique", "2025-05-03": "Enrique", "2025-05-04": "Enrique",
+      "2025-06-14": "Ramón", "2025-06-15": "Ramón", "2025-06-16": "Ramón",
+      "2025-06-20": "Malvina", "2025-06-21": "Malvina", "2025-06-22": "Malvina",
+      "2025-08-15": "Eugenia", "2025-08-16": "Eugenia", "2025-08-17": "Eugenia",
+      "2025-11-21": "Enrique", "2025-11-22": "Enrique", "2025-11-23": "Enrique", "2025-11-24": "Enrique",
+      "2025-12-06": "Ramón", "2025-12-07": "Ramón", "2025-12-08": "Ramón"
+      // Podés agregar aquí todas las fechas rotativas jueves-viernes según tu esquema
     };
 
     function renderCalendar() {
@@ -143,33 +124,28 @@
       const monthName = date.toLocaleString('es-ES', { month: 'long' });
       monthLabel.textContent = `${capitalize(monthName)} ${year}`;
 
-      const startDay = date.getDay(); // 0 Domingo, 1 Lunes...
+      const startDay = (new Date(year, currentMonth, 1).getDay() + 6) % 7;
       const daysInMonth = new Date(year, currentMonth + 1, 0).getDate();
 
-      // Agregar los nombres de los días
       ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].forEach(name => {
-        const dayName = document.createElement('div');
-        dayName.className = 'day-name';
-        dayName.textContent = name;
-        calendarGrid.appendChild(dayName);
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'day-name';
+        nameDiv.textContent = name;
+        calendarGrid.appendChild(nameDiv);
       });
 
-      // Ajuste para que el mes empiece correctamente (lunes)
-      let offset = (date.getDay() + 6) % 7;
-
-      for (let i = 0; i < offset; i++) {
-        const emptyCell = document.createElement('div');
-        calendarGrid.appendChild(emptyCell);
+      for (let i = 0; i < startDay; i++) {
+        calendarGrid.appendChild(document.createElement('div'));
       }
 
-      for (let day = 1; day <= daysInMonth; day++) {
-        const fullDate = `${year}-${String(currentMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      for (let d = 1; d <= daysInMonth; d++) {
+        const fullDate = `${year}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
         const div = document.createElement('div');
         div.className = 'day';
-        div.textContent = day;
+        div.textContent = d;
 
-        if (turnos[fullDate]) {
-          const persona = turnos[fullDate];
+        const persona = turnos[fullDate];
+        if (persona) {
           div.classList.add(persona.toLowerCase());
           div.dataset.persona = persona;
         }
@@ -181,10 +157,7 @@
 
     function seleccionarPersona(fecha) {
       const persona = turnos[fecha];
-      if (!persona) {
-        infoBox.textContent = `El ${fecha} no tiene asignación.`;
-        return;
-      }
+      infoBox.textContent = persona ? persona : 'Sin asignación';
 
       const dias = document.querySelectorAll('.day');
       dias.forEach(d => {
@@ -194,22 +167,14 @@
           d.classList.remove('selected');
         }
       });
-
-      infoBox.textContent = `Turno para ${persona}`;
     }
 
     function nextMonth() {
-      if (currentMonth < 11) {
-        currentMonth++;
-        renderCalendar();
-      }
+      if (currentMonth < 11) { currentMonth++; renderCalendar(); }
     }
 
     function prevMonth() {
-      if (currentMonth > 0) {
-        currentMonth--;
-        renderCalendar();
-      }
+      if (currentMonth > 0) { currentMonth--; renderCalendar(); }
     }
 
     function capitalize(str) {
