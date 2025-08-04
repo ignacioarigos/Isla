@@ -2,189 +2,118 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Isla – Calendario 2025</title>
+  <title>Calendario de Turnos</title>
   <style>
-    :root {
-      --eugenia: #9e85e4;
-      --enrique: #4caf50;
-      --ramon: #ff9800;
-      --malvina: #f76a6a;
-      --bg: #f4f6f9;
-      --text: #1c1c1c;
-    }
-
     body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
       padding: 20px;
     }
-
     h1 {
-      text-align: center;
-      font-size: 1.8rem;
-      margin-bottom: 20px;
-    }
-
-    .nav {
-      text-align: center;
       margin-bottom: 10px;
     }
-
-    .nav button {
-      background-color: #e0e0e0;
-      border: none;
-      border-radius: 6px;
-      padding: 6px 12px;
-      margin: 0 5px;
-      font-size: 0.9rem;
-      cursor: pointer;
+    #calendar {
+      width: 100%;
+      max-width: 500px;
     }
-
-    .calendar {
+    .grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-      max-width: 600px;
-      margin: auto;
+      gap: 5px;
     }
-
-    .day-name {
-      text-align: center;
-      font-weight: bold;
-      font-size: 0.8rem;
-    }
-
     .day {
-      background-color: white;
-      border-radius: 6px;
-      height: 50px;
+      background-color: #1e1e1e;
+      padding: 10px;
       text-align: center;
-      padding-top: 6px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      border: 2px solid transparent;
+      border-radius: 5px;
     }
-
-    .day:hover {
-      border-color: #d0d0d0;
-    }
-
-    .eugenia  { background-color: var(--eugenia); color: white; }
-    .enrique  { background-color: var(--enrique); color: white; }
-    .ramon    { background-color: var(--ramon); color: white; }
-    .malvina  { background-color: var(--malvina); color: white; }
-
     .selected {
-      outline: 2px solid #000;
+      border: 2px solid orange;
     }
-
-    .info {
-      text-align: center;
-      margin-top: 16px;
-      font-size: 1rem;
+    .persona1 { background-color: #ff9800; }
+    .persona2 { background-color: #4caf50; }
+    .persona3 { background-color: #03a9f4; }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
     }
   </style>
 </head>
 <body>
-  <h1>Turnos – Isla 2025</h1>
-  <div class="nav">
-    <button onclick="prevMonth()">◀</button>
-    <span id="monthLabel">Enero 2025</span>
-    <button onclick="nextMonth()">▶</button>
+  <h1>Calendario de Turnos</h1>
+  <div id="calendar">
+    <div class="controls">
+      <button onclick="prevMonth()">Anterior</button>
+      <span id="monthYear"></span>
+      <button onclick="nextMonth()">Siguiente</button>
+    </div>
+    <div class="grid" id="calendarGrid"></div>
+    <p id="infoBox"></p>
   </div>
-  <div class="calendar" id="calendarGrid"></div>
-  <div class="info" id="infoBox">Seleccioná un día</div>
 
   <script>
     const calendarGrid = document.getElementById('calendarGrid');
-    const monthLabel = document.getElementById('monthLabel');
     const infoBox = document.getElementById('infoBox');
-    let currentMonth = 0;
-    const year = 2025;
+    const monthYear = document.getElementById('monthYear');
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
 
     const turnos = {
-      // Fechas especiales
-      "2025-03-22":"Eugenia","2025-03-23":"Eugenia","2025-03-24":"Eugenia",
-      "2025-05-01":"Enrique","2025-05-02":"Enrique","2025-05-03":"Enrique","2025-05-04":"Enrique",
-      "2025-06-14":"Ramon","2025-06-15":"Ramon","2025-06-16":"Ramon",
-      "2025-06-20":"Malvina","2025-06-21":"Malvina","2025-06-22":"Malvina",
-      "2025-08-15":"Eugenia","2025-08-16":"Eugenia","2025-08-17":"Eugenia",
-      "2025-11-21":"Enrique","2025-11-22":"Enrique","2025-11-23":"Enrique","2025-11-24":"Enrique",
-      "2025-12-06":"Ramon","2025-12-07":"Ramon","2025-12-08":"Ramon",
-
-      // Turnos regulares jueves-viernes
-      "2025-03-08":"Enrique","2025-03-09":"Enrique",
-      "2025-03-15":"Ramon","2025-03-16":"Ramon",
-      "2025-03-29":"Eugenia","2025-03-30":"Eugenia",
-      "2025-04-05":"Malvina","2025-04-06":"Malvina",
-      "2025-04-12":"Enrique","2025-04-13":"Enrique",
-      "2025-04-19":"Ramon","2025-04-20":"Ramon",
-      "2025-04-26":"Eugenia","2025-04-27":"Eugenia",
-      "2025-05-10":"Malvina","2025-05-11":"Malvina",
-      "2025-05-17":"Enrique","2025-05-18":"Enrique",
-      "2025-05-24":"Ramon","2025-05-25":"Ramon",
-      "2025-05-31":"Eugenia","2025-06-01":"Eugenia",
-      "2025-06-07":"Malvina","2025-06-08":"Malvina",
-      "2025-06-28":"Enrique","2025-06-29":"Enrique",
-      "2025-07-05":"Ramon","2025-07-06":"Ramon",
-      "2025-07-12":"Eugenia","2025-07-13":"Eugenia",
-      "2025-08-09":"Malvina","2025-08-10":"Malvina",
-      "2025-08-23":"Enrique","2025-08-24":"Enrique",
-      "2025-08-30":"Ramon","2025-08-31":"Ramon",
-      "2025-09-06":"Eugenia","2025-09-07":"Eugenia",
-      "2025-09-13":"Malvina","2025-09-14":"Malvina",
-      "2025-09-20":"Enrique","2025-09-21":"Enrique",
-      "2025-09-27":"Ramon","2025-09-28":"Ramon",
-      "2025-10-04":"Eugenia","2025-10-05":"Eugenia",
-      "2025-10-11":"Malvina","2025-10-12":"Malvina",
-      "2025-10-18":"Enrique","2025-10-19":"Enrique",
-      "2025-10-25":"Ramon","2025-10-26":"Ramon",
-      "2025-11-01":"Eugenia","2025-11-02":"Eugenia",
-      "2025-11-08":"Malvina","2025-11-09":"Malvina",
-      "2025-11-15":"Enrique","2025-11-16":"Enrique",
-      "2025-11-29":"Ramon","2025-11-30":"Ramon",
-      "2025-12-13":"Eugenia","2025-12-14":"Eugenia",
-      "2025-12-20":"Malvina","2025-12-21":"Malvina",
-      "2025-12-27":"Enrique","2025-12-28":"Enrique"
+      "2025-08-07": "Persona1",
+      "2025-08-14": "Persona2",
+      "2025-08-21": "Persona3"
+      // Agregar más fechas según necesidad
     };
 
     function renderCalendar() {
-      calendarGrid.innerHTML = '';
-      const date = new Date(year, currentMonth, 1);
-      const monthName = date.toLocaleString('es-ES', { month: 'long' });
-      monthLabel.textContent = `${capitalize(monthName)} ${year}`;
+      calendarGrid.innerHTML = "";
+      const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                          "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+      monthYear.textContent = `${monthNames[currentMonth]} ${currentYear}`;
 
-      const startDay = (new Date(year, currentMonth, 1).getDay() + 6) % 7;
-      const daysInMonth = new Date(year, currentMonth + 1, 0).getDate();
+      const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay(); // 0 = domingo
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-      ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].forEach(name => {
-        const nameDiv = document.createElement('div');
-        nameDiv.className = 'day-name';
-        nameDiv.textContent = name;
-        calendarGrid.appendChild(nameDiv);
-      });
-
-      for (let i = 0; i < startDay; i++) {
+      for (let i = 0; i < firstDayOfMonth; i++) {
         calendarGrid.appendChild(document.createElement('div'));
       }
 
       for (let d = 1; d <= daysInMonth; d++) {
-        const fullDate = `${year}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const fullDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const fechaObj = new Date(currentYear, currentMonth, d);
         const div = document.createElement('div');
         div.className = 'day';
         div.textContent = d;
+        div.dataset.fecha = fullDate;
 
-        const persona = turnos[fullDate];
-        if (persona) {
-          div.classList.add(persona.toLowerCase());
-          div.dataset.persona = persona;
-        }
-
-        div.onclick = () => seleccionarPersona(fullDate);
         calendarGrid.appendChild(div);
+      }
+
+      for (const fechaTurno in turnos) {
+        const persona = turnos[fechaTurno];
+        const fechaBase = new Date(fechaTurno);
+        const diaSemana = fechaBase.getDay();
+        const juevesOffset = ((diaSemana + 3) % 7);
+        const inicioRango = new Date(fechaBase);
+        inicioRango.setDate(fechaBase.getDate() - juevesOffset);
+
+        for (let i = 0; i <= 6; i++) {
+          const diaRango = new Date(inicioRango);
+          diaRango.setDate(inicioRango.getDate() + i);
+          const fechaRango = `${diaRango.getFullYear()}-${String(diaRango.getMonth() + 1).padStart(2,'0')}-${String(diaRango.getDate()).padStart(2,'0')}`;
+
+          const elemento = document.querySelector(`[data-fecha="${fechaRango}"]`);
+          if (elemento) {
+            elemento.classList.add(persona.toLowerCase());
+            elemento.dataset.persona = persona;
+          }
+        }
       }
     }
 
@@ -205,19 +134,21 @@
     function nextMonth() {
       if (currentMonth < 11) {
         currentMonth++;
-        renderCalendar();
+      } else {
+        currentMonth = 0;
+        currentYear++;
       }
+      renderCalendar();
     }
 
     function prevMonth() {
       if (currentMonth > 0) {
         currentMonth--;
-        renderCalendar();
+      } else {
+        currentMonth = 11;
+        currentYear--;
       }
-    }
-
-    function capitalize(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1);
+      renderCalendar();
     }
 
     renderCalendar();
