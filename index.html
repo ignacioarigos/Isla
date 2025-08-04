@@ -66,6 +66,7 @@
   </div>
   <div id="calendario"></div>
   <div id="resultado"></div>
+
   <script>
 const bloques = [
   {
@@ -117,7 +118,7 @@ const bloques = [
     ]
   }
 ];
-    <script>
+
 const fechaInicio = new Date("2025-01-01");
 const fechaFin = new Date("2026-03-31");
 let mesActual = new Date("2025-01-01");
@@ -187,7 +188,8 @@ function renderizarCalendario() {
     if (asignado) {
       dia.classList.add(asignado.clase);
       dia.onclick = () => {
-        document.getElementById("resultado").innerHTML = `<strong>${asignado.nombre}</strong> está asignado en <strong>${asignado.bloque}</strong><br>Del <strong>${asignado.desde}</strong> al <strong>${asignado.hasta}</strong>`;
+        document.getElementById("resultado").innerHTML =
+          `<strong>${asignado.nombre}</strong> está asignado en <strong>${asignado.bloque}</strong><br>Del <strong>${asignado.desde}</strong> al <strong>${asignado.hasta}</strong>`;
       };
     } else {
       dia.classList.add("no-asignado");
@@ -198,9 +200,8 @@ function renderizarCalendario() {
   }
 }
 
-// 📅 Extiende Bloque 2 de jueves a miércoles
 function extenderBloque2(fecha) {
-  const diaSemana = fecha.getDay();
+  const diaSemana = fecha.getDay(); // domingo = 0 ... jueves = 4
   const diferencia = (diaSemana >= 4) ? diaSemana - 4 : 7 - (4 - diaSemana);
   const inicio = new Date(fecha);
   inicio.setDate(fecha.getDate() - diferencia);
