@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Calendario de Asignaciones</title>
+  <meta charset="UTF-8">
+  <title>Calendario Básico</title>
   <style>
     body {
-      font-family: Segoe UI, Roboto, sans-serif;
+      font-family: Segoe UI, sans-serif;
       background-color: #f5f7fa;
       color: #333;
       display: flex;
@@ -14,33 +14,7 @@
       padding: 20px;
     }
     h1 {
-      font-weight: 600;
-      margin-bottom: 20px;
-    }
-    #controles {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-    button {
-      padding: 6px 12px;
-      background-color: #ffa500;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    button:hover {
-      background-color: #ff8c00;
-    }
-    #mes-actual {
-      font-size: 18px;
-      font-weight: 500;
-      background: #fff3cd;
-      padding: 6px 12px;
-      border-radius: 6px;
+      margin-bottom: 16px;
     }
     table {
       border-collapse: collapse;
@@ -63,150 +37,64 @@
       font-weight: bold;
       color: white;
     }
-    .eugenia { background: linear-gradient(135deg, #bb86fc, #9e71e9); }
-    .malvina { background: linear-gradient(135deg, #2ecc71, #27ae60); }
-    .ramon   { background: linear-gradient(135deg, #f7901e, #e85c00); }
-    .sol     { background: linear-gradient(135deg, #ff7f7f, #ff4f4f); }
-    #asignado {
-      margin-top: 16px;
-      font-weight: 500;
-      background-color: #fff8e1;
-      padding: 8px 16px;
-      border-radius: 8px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-    }
+    .eugenia  { background: linear-gradient(135deg, #bb86fc, #9e71e9); }
+    .malvina  { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+    .ramon    { background: linear-gradient(135deg, #f7901e, #e85c00); }
+    .enrique  { background: linear-gradient(135deg, #ff7f7f, #ff4f4f); }
   </style>
 </head>
 <body>
-  <h1>Calendario de Asignaciones</h1>
-  <div id="controles">
-    <button id="prevMes">◀︎ Anterior</button>
-    <div id="mes-actual">Enero 2025</div>
-    <button id="nextMes">Siguiente ▶︎</button>
-  </div>
-  <table id="calendario">
+  <h1>Calendario Asignado</h1>
+  <table>
     <thead>
       <tr>
         <th>Do</th><th>Lu</th><th>Ma</th><th>Mi</th><th>Ju</th><th>Vi</th><th>Sa</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody id="calendario"></tbody>
   </table>
-  <div id="asignado">Selecciona un día para ver a quién pertenece</div>
-    // Bloques de asignación por día
-  const bloque1 = ["eugenia", "malvina", "ramon", "sol"];
-  const bloque2 = ["ramon", "eugenia", "malvina", "sol"];
 
-  // Días feriados (formato: YYYY-MM-DD)
-  const feriados = [
-    "2025-01-01", "2025-02-24", "2025-03-24",
-    "2025-04-02", "2025-05-01", "2025-06-20",
-    "2025-07-09", "2025-08-17", "2025-10-12",
-    "2025-12-25"
-  ];
+  <script>
+    const bloque = ["enrique", "eugenia", "malvina", "ramon"];
+    const colores = { enrique: "enrique", eugenia: "eugenia", malvina: "malvina", ramon: "ramon" };
 
-  // Días de invierno (intervalo: inclusive)
-  const invierno = {
-    inicio: "2025-07-14",
-    fin: "2025-07-27"
-  };
+    function construirCalendario() {
+      const tbody = document.getElementById("calendario");
+      tbody.innerHTML = "";
+      const fecha = new Date();
+      const año = fecha.getFullYear();
+      const mes = fecha.getMonth();
+      const primerDia = new Date(año, mes, 1);
+      const ultimoDia = new Date(año, mes + 1, 0);
 
-  // Mapeo de nombres a colores (ya usados como clases CSS)
-  const colores = {
-    eugenia: "eugenia",
-    malvina: "malvina",
-    ramon: "ramon",
-    sol: "sol"
-  };
+      let diaSemanaInicio = primerDia.getDay();
+      let fila = document.createElement("tr");
 
-  // Fecha actual y lógica de navegación
-  let fechaActual = new Date(2025, 0); // Enero 2025
-    const tbody = document.querySelector("tbody");
-  const mesActualElem = document.getElementById("mes-actual");
-
-  function dibujarCalendario(fecha) {
-    tbody.innerHTML = "";
-    const año = fecha.getFullYear();
-    const mes = fecha.getMonth();
-
-    const primerDia = new Date(año, mes, 1);
-    const ultimoDia = new Date(año, mes + 1, 0);
-    const diaSemanaInicio = primerDia.getDay();
-    const diasEnMes = ultimoDia.getDate();
-
-    let fila = document.createElement("tr");
-    for (let i = 0; i < diaSemanaInicio; i++) {
-      fila.appendChild(document.createElement("td"));
-    }
-
-    for (let dia = 1; dia <= diasEnMes; dia++) {
-      const celda = document.createElement("td");
-      celda.textContent = dia;
-
-      const fechaStr = `${año}-${(mes + 1).toString().padStart(2, "0")}-${dia.toString().padStart(2, "0")}`;
-      let bloque = calcularBloque(fechaStr);
-
-      if (bloque) {
-        celda.classList.add("highlight");
-        celda.classList.add(colores[bloque]);
+      for (let i = 0; i < diaSemanaInicio; i++) {
+        fila.appendChild(document.createElement("td"));
       }
 
-      celda.onclick = () => {
-        document.getElementById("asignado").textContent = bloque
-          ? `El día ${dia}/${mes + 1}/${año} pertenece a ${bloque.charAt(0).toUpperCase() + bloque.slice(1)}`
-          : `El día ${dia}/${mes + 1}/${año} no está asignado a ningún bloque`;
-      };
+      for (let dia = 1; dia <= ultimoDia.getDate(); dia++) {
+        const celda = document.createElement("td");
+        celda.textContent = dia;
 
-      fila.appendChild(celda);
-      if ((dia + diaSemanaInicio) % 7 === 0) {
+        const index = (dia + diaSemanaInicio - 1) % bloque.length;
+        const nombre = bloque[index];
+        celda.classList.add("highlight", colores[nombre]);
+
+        fila.appendChild(celda);
+        if ((dia + diaSemanaInicio) % 7 === 0) {
+          tbody.appendChild(fila);
+          fila = document.createElement("tr");
+        }
+      }
+
+      if (fila.hasChildNodes()) {
         tbody.appendChild(fila);
-        fila = document.createElement("tr");
       }
     }
 
-    if (fila.hasChildNodes()) {
-      tbody.appendChild(fila);
-    }
-
-    const nombreMes = fecha.toLocaleString("es-ES", { month: "long" });
-    mesActualElem.textContent = `${nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1)} ${año}`;
-  }
-
-  function calcularBloque(fechaStr) {
-    const fecha = new Date(fechaStr);
-    const diaSemana = fecha.getDay();
-
-    // Verifica si está en intervalo de invierno
-    const fechaInt = new Date(fechaStr);
-    const inicio = new Date(invierno.inicio);
-    const fin = new Date(invierno.fin);
-    if (fechaInt >= inicio && fechaInt <= fin) return null;
-
-    // Verifica si es feriado o fin de semana
-    if (feriados.includes(fechaStr) || diaSemana === 0 || diaSemana === 6) return null;
-
-    // Cálculo del índice tipo jueves a miércoles (bloque 2)
-    let juevesBase = new Date("2025-01-02");
-    let index = Math.floor((fecha - juevesBase) / (1000 * 60 * 60 * 24 * 7));
-    let diaDesdeJueves = (fecha.getDay() + 7 - 4) % 7;
-
-    let bloqueIndex = (index + (diaDesdeJueves > 0 ? 1 : 0)) % bloque2.length;
-    return bloque2[bloqueIndex];
-  }
-
-  document.getElementById("prevMes").onclick = () => {
-    fechaActual.setMonth(fechaActual.getMonth() - 1);
-    dibujarCalendario(fechaActual);
-  };
-
-  document.getElementById("nextMes").onclick = () => {
-    fechaActual.setMonth(fechaActual.getMonth() + 1);
-    dibujarCalendario(fechaActual);
-  };
-
-  dibujarCalendario(fechaActual);
+    construirCalendario();
   </script>
 </body>
 </html>
-
-  <script>
