@@ -1,39 +1,46 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <title>Asignación de Bloques</title>
-    <style>
-        body {
-            background: linear-gradient(135deg, #1f1f1f, #ff6600);
-            color: #fff;
-            font-family: sans-serif;
-            padding: 20px;
-        }
-        select, button {
-            padding: 8px;
-            margin: 10px 0;
-            border-radius: 6px;
-            border: none;
-        }
-        #resultado {
-            margin-top: 20px;
-            background-color: #2b2b2b;
-            padding: 15px;
-            border-radius: 8px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Asignaciones por Fecha</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f5f5;
+      color: #222;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    #resultado {
+      margin-top: 20px;
+      background-color: #fff;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+    }
+  </style>
 </head>
 <body>
-    <h1>Asignación por Fecha</h1>
-    <label for="fecha">Selecciona una fecha:</label>
-    <input type="date" id="fecha" />
-    <button onclick="seleccionarFecha()">Consultar</button>
-    <div id="resultado"></div>
-    <script>
+  <h1>Consultar Asignación por Fecha</h1>
+  <input type="date" id="fecha" />
+  <button onclick="seleccionarFecha()">Consultar</button>
+  <div id="resultado"></div>
+  <script>
 const bloques = [
   {
-    nombre: "Bloque 1",
+    nombre: "Vacaciones",
     prioridad: 1,
     asignaciones: [
       { inicio: "2025-01-02", fin: "2025-01-16", nombre: "Eugenia" },
@@ -47,7 +54,11 @@ const bloques = [
     prioridad: 4,
     asignaciones: [
       { inicio: "2025-08-07", fin: "2025-08-13", nombre: "Eugenia" },
-      { inicio: "2025-08-14", fin: "2025-08-20", nombre: "Malvina" }
+      { inicio: "2025-08-14", fin: "2025-08-20", nombre: "Malvina" },
+      { inicio: "2025-08-21", fin: "2025-08-27", nombre: "Enrique" },
+      { inicio: "2025-08-28", fin: "2025-09-03", nombre: "Ramón" },
+      { inicio: "2025-09-04", fin: "2025-09-10", nombre: "Malvina" },
+      { inicio: "2025-09-11", fin: "2025-09-17", nombre: "Eugenia" }
     ]
   },
   {
@@ -55,7 +66,9 @@ const bloques = [
     prioridad: 2,
     asignaciones: [
       { inicio: "2025-07-01", fin: "2025-07-15", nombre: "Enrique" },
-      { inicio: "2025-07-16", fin: "2025-07-31", nombre: "Ramón" }
+      { inicio: "2025-07-16", fin: "2025-07-31", nombre: "Ramón" },
+      { inicio: "2025-10-01", fin: "2025-10-15", nombre: "Malvina" },
+      { inicio: "2025-10-16", fin: "2025-10-31", nombre: "Eugenia" }
     ]
   },
   {
@@ -63,58 +76,63 @@ const bloques = [
     prioridad: 3,
     asignaciones: [
       { inicio: "2025-12-20", fin: "2025-12-31", nombre: "Malvina" },
-      { inicio: "2026-01-01", fin: "2026-01-10", nombre: "Eugenia" }
+      { inicio: "2026-01-01", fin: "2026-01-10", nombre: "Eugenia" },
+      { inicio: "2026-01-11", fin: "2026-01-20", nombre: "Ramón" },
+      { inicio: "2026-01-21", fin: "2026-01-31", nombre: "Enrique" },
+      { inicio: "2026-02-01", fin: "2026-02-14", nombre: "Malvina" },
+      { inicio: "2026-02-15", fin: "2026-02-28", nombre: "Eugenia" }
     ]
   }
 ];
       <script>
 function seleccionarFecha() {
-    const fechaInput = document.getElementById("fecha").value;
-    if (!fechaInput) return;
+  const fechaInput = document.getElementById("fecha").value;
+  if (!fechaInput) return;
 
-    const fechaSeleccionada = new Date(fechaInput);
-    const resultadoDiv = document.getElementById("resultado");
-    let asignacionFinal = null;
-    let prioridadMasAlta = Infinity;
+  const fechaSeleccionada = new Date(fechaInput);
+  let asignacionFinal = null;
+  let prioridadActual = Infinity;
 
-    bloques.forEach(bloque => {
-        bloque.asignaciones.forEach(asignacion => {
-            const inicio = new Date(asignacion.inicio);
-            const fin = new Date(asignacion.fin);
+  bloques.forEach(bloque => {
+    bloque.asignaciones.forEach(asignacion => {
+      let inicio = new Date(asignacion.inicio);
+      let fin = new Date(asignacion.fin);
 
-            // Para Bloque 2, extender jueves a miércoles si corresponde
-            if (bloque.nombre === "Bloque 2" && fechaSeleccionada >= inicio && fechaSeleccionada <= fin) {
-                const rango = extenderBloque2(fechaSeleccionada);
-                inicio.setTime(rango[0].getTime());
-                fin.setTime(rango[1].getTime());
-            }
+      if (bloque.nombre === "Bloque 2") {
+        // Ajustamos el rango a jueves a miércoles para la fecha seleccionada
+        const rango = extenderABloque2(fechaSeleccionada);
+        inicio = rango[0];
+        fin = rango[1];
+      }
 
-            if (fechaSeleccionada >= inicio && fechaSeleccionada <= fin && bloque.prioridad < prioridadMasAlta) {
-                asignacionFinal = {
-                    nombre: asignacion.nombre,
-                    bloque: bloque.nombre,
-                    desde: asignacion.inicio,
-                    hasta: asignacion.fin
-                };
-                prioridadMasAlta = bloque.prioridad;
-            }
-        });
+      if (fechaSeleccionada >= inicio && fechaSeleccionada <= fin) {
+        if (bloque.prioridad < prioridadActual) {
+          asignacionFinal = {
+            nombre: asignacion.nombre,
+            bloque: bloque.nombre,
+            desde: asignacion.inicio,
+            hasta: asignacion.fin
+          };
+          prioridadActual = bloque.prioridad;
+        }
+      }
     });
+  });
 
-    resultadoDiv.innerHTML = asignacionFinal
-        ? `<strong>${asignacionFinal.nombre}</strong> tiene asignación en <strong>${asignacionFinal.bloque}</strong> del <strong>${asignacionFinal.desde}</strong> al <strong>${asignacionFinal.hasta}</strong>.`
-        : `No hay asignación para esa fecha.`;
+  const resultadoDiv = document.getElementById("resultado");
+  resultadoDiv.innerHTML = asignacionFinal
+    ? `<strong>${asignacionFinal.nombre}</strong> está asignado en <strong>${asignacionFinal.bloque}</strong><br>Desde <strong>${asignacionFinal.desde}</strong> hasta <strong>${asignacionFinal.hasta}</strong>.`
+    : `No hay asignación registrada para esa fecha.`;
 }
 
-// 📅 Extiende de jueves a miércoles para Bloque 2
-function extenderBloque2(fecha) {
-    const diaSemana = fecha.getDay(); // domingo = 0, lunes = 1, ..., sábado = 6
-    const diferenciaAtras = (diaSemana >= 4) ? diaSemana - 4 : 7 - (4 - diaSemana);
-    const inicio = new Date(fecha);
-    inicio.setDate(fecha.getDate() - diferenciaAtras);
-    const fin = new Date(inicio);
-    fin.setDate(inicio.getDate() + 6);
-    return [inicio, fin];
+function extenderABloque2(fecha) {
+  const diaSemana = fecha.getDay(); // Domingo=0, Lunes=1, ..., Sábado=6
+  const diferencia = (diaSemana >= 4) ? diaSemana - 4 : 7 - (4 - diaSemana);
+  const inicio = new Date(fecha);
+  inicio.setDate(fecha.getDate() - diferencia);
+  const fin = new Date(inicio);
+  fin.setDate(inicio.getDate() + 6); // jueves + 6 días = miércoles
+  return [inicio, fin];
 }
 </script>
 </body>
