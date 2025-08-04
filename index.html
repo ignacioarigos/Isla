@@ -3,65 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Asignación de Turnos</title>
+  <title>Turnos Isla 2024</title>
   <style>
     :root {
       --eugenia: #9e85e4;
       --enrique: #4caf50;
       --ramon: #ff9800;
       --malvina: #f76a6a;
-      --bg-light: #f7f9fc;
-      --text-dark: #1f1f1f;
+      --bg: #f9f9fb;
+      --text: #2a2a2a;
     }
 
     body {
-      margin: 0;
+      background-color: var(--bg);
       font-family: 'Segoe UI', sans-serif;
-      background-color: var(--bg-light);
-      color: var(--text-dark);
+      margin: 0;
       padding: 30px;
+      color: var(--text);
     }
 
     h1 {
       text-align: center;
-      font-size: 2.5rem;
+      font-size: 2.4rem;
       margin-bottom: 40px;
     }
 
     .semana {
       border-radius: 12px;
-      padding: 18px 20px;
+      padding: 20px;
       margin-bottom: 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       color: white;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 
-    .eugenia  { background-color: var(--eugenia); }
-    .enrique  { background-color: var(--enrique); }
-    .ramon    { background-color: var(--ramon); }
-    .malvina  { background-color: var(--malvina); }
+    .eugenia { background-color: var(--eugenia); }
+    .enrique { background-color: var(--enrique); }
+    .ramon   { background-color: var(--ramon); }
+    .malvina { background-color: var(--malvina); }
 
     .semana h3 {
-      margin: 0;
-      font-size: 1.2rem;
+      margin: 0 0 8px 0;
+      font-size: 1.3rem;
     }
 
     .semana p {
-      margin-top: 8px;
-      font-size: 1rem;
+      margin: 0;
+      font-size: 1.05rem;
     }
 
     .footer {
-      margin-top: 60px;
+      margin-top: 50px;
       font-size: 0.9rem;
       text-align: center;
-      color: #999;
+      color: #aaa;
     }
   </style>
 </head>
 <body>
-  <h1>Turnos Semanales</h1>
+  <h1>Turnos Semanales - Isla</h1>
 
+  <!-- Fechas asignadas especiales -->
   <div class="semana eugenia">
     <h3>Semana del 18 al 24 de Marzo</h3>
     <p>22 al 24 – Eugenia</p>
@@ -97,8 +98,22 @@
     <p>6 al 8 – Ramón</p>
   </div>
 
-  <div class="footer">
-    Diseñado por Ignacio • Apariencia estilo Copilot ✨
+  <!-- Ejemplo de semanas regulares -->
+  <div class="semana enrique">
+    <h3>Semana del 6 al 12 de Marzo</h3>
+    <p>8 al 9 – Enrique</p>
   </div>
+
+  <div class="semana ramon">
+    <h3>Semana del 13 al 19 de Marzo</h3>
+    <p>15 al 16 – Ramón</p>
+  </div>
+
+  <div class="semana eugenia">
+    <h3>Semana del 27 de Marzo al 2 de Abril</h3>
+    <p>29 al 30 – Eugenia</p>
+  </div>
+
+  <div class="footer">Hecho con ❤️ por Ignacio – Isla Scheduler 2024</div>
 </body>
 </html>
