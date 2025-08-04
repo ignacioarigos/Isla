@@ -66,19 +66,11 @@
       font-size: 0.9rem;
       cursor: pointer;
       border: 2px solid transparent;
+      transition: background 0.2s;
     }
 
     .day:hover {
       border-color: #d0d0d0;
-    }
-
-    .eugenia  { background-color: var(--eugenia); color: white; }
-    .enrique  { background-color: var(--enrique); color: white; }
-    .ramon    { background-color: var(--ramon); color: white; }
-    .malvina  { background-color: var(--malvina); color: white; }
-
-    .selected {
-      outline: 2px solid #000;
     }
 
     .info {
@@ -86,6 +78,15 @@
       margin-top: 16px;
       font-size: 1rem;
     }
+
+    .selected {
+      outline: 2px solid #000;
+    }
+
+    .eugenia { background-color: var(--eugenia); color: white; }
+    .enrique { background-color: var(--enrique); color: white; }
+    .ramon   { background-color: var(--ramon);   color: white; }
+    .malvina { background-color: var(--malvina); color: white; }
   </style>
 </head>
 <body>
@@ -106,14 +107,7 @@
     const year = 2025;
 
     const turnos = {
-      "2025-03-22":"Eugenia",
-      "2025-05-01":"Enrique",
-      "2025-06-14":"Ramon",
-      "2025-06-20":"Malvina",
-      "2025-08-15":"Eugenia",
-      "2025-11-21":"Enrique",
-      "2025-12-06":"Ramon",
-      // ... incluir las demás fechas como ya tenías
+      // (tu objeto de turnos va acá, igual al que ya definimos)
     };
 
     function renderCalendar() {
@@ -136,8 +130,6 @@
         calendarGrid.appendChild(document.createElement('div'));
       }
 
-      const dayElements = {};
-
       for (let d = 1; d <= daysInMonth; d++) {
         const fullDate = `${year}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
         const div = document.createElement('div');
@@ -146,39 +138,39 @@
         div.dataset.fecha = fullDate;
         div.onclick = () => seleccionarPersona(fullDate);
         calendarGrid.appendChild(div);
-        dayElements[fullDate] = div;
-      }
-
-      // Pintar rangos jueves→miércoles
-      for (const fecha in turnos) {
-        const persona = turnos[fecha];
-        const baseDate = new Date(fecha);
-        const diaSemana = baseDate.getDay(); // 0=dom...6=sáb
-        const offset = (diaSemana >= 4) ? diaSemana - 4 : diaSemana + 3; // desde jueves anterior
-        const inicio = new Date(baseDate);
-        inicio.setDate(baseDate.getDate() - offset);
-
-        for (let i = 0; i < 7; i++) {
-          const dia = new Date(inicio);
-          dia.setDate(inicio.getDate() + i);
-          const diaStr = `${dia.getFullYear()}-${String(dia.getMonth()+1).padStart(2,'0')}-${String(dia.getDate()).padStart(2,'0')}`;
-          if (dia.getMonth() === currentMonth && dayElements[diaStr]) {
-            dayElements[diaStr].classList.add(persona.toLowerCase());
-            dayElements[diaStr].dataset.persona = persona;
-          }
-        }
       }
     }
 
     function seleccionarPersona(fecha) {
-      const persona = turnos[fecha];
-      infoBox.textContent = persona ? persona : 'Sin asignación';
+      // limpiar todo antes
       document.querySelectorAll('.day').forEach(d => {
-        d.classList.remove('selected');
-        if (d.dataset.persona === persona) {
-          d.classList.add('selected');
-        }
+        d.classList.remove('selected','eugenia','enrique','ramon','malvina');
       });
+
+      const persona = turnos[fecha];
+      if (!persona) {
+        infoBox.textContent = 'Sin asignación';
+        return;
+      }
+
+      infoBox.textContent = persona;
+
+      const baseDate = new Date(fecha);
+      const diaSemana = baseDate.getDay(); // 0 = dom...6 = sáb
+      const offset = (diaSemana >= 4) ? diaSemana - 4 : diaSemana + 3;
+      const inicio = new Date(baseDate);
+      inicio.setDate(baseDate.getDate() - offset);
+
+      for (let i = 0; i < 7; i++) {
+        const dia = new Date(inicio);
+        dia.setDate(inicio.getDate() + i);
+        const diaStr = `${dia.getFullYear()}-${String(dia.getMonth()+1).padStart(2,'0')}-${String(dia.getDate()).padStart(2,'0')}`;
+
+        const div = document.querySelector(`[data-fecha="${diaStr}"]`);
+        if (div) {
+          div.classList.add(persona.toLowerCase());
+        }
+      }
     }
 
     function nextMonth() {
