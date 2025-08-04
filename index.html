@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Turnos Isla 2024</title>
+  <title>Isla 2025</title>
   <style>
     :root {
       --eugenia: #9e85e4;
@@ -15,105 +15,208 @@
     }
 
     body {
+      margin: 0;
       background-color: var(--bg);
       font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 30px;
       color: var(--text);
+      padding: 20px;
     }
 
     h1 {
       text-align: center;
-      font-size: 2.4rem;
-      margin-bottom: 40px;
+      font-size: 2rem;
+      margin-bottom: 10px;
     }
 
-    .semana {
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
-      color: white;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    #calendar {
+      max-width: 800px;
+      margin: 0 auto;
     }
 
-    .eugenia { background-color: var(--eugenia); }
-    .enrique { background-color: var(--enrique); }
-    .ramon   { background-color: var(--ramon); }
-    .malvina { background-color: var(--malvina); }
-
-    .semana h3 {
-      margin: 0 0 8px 0;
-      font-size: 1.3rem;
+    .nav {
+      text-align: center;
+      margin: 20px 0;
     }
 
-    .semana p {
-      margin: 0;
-      font-size: 1.05rem;
+    .nav button {
+      background-color: #e0e0e0;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin: 0 5px;
+      font-size: 1rem;
+      cursor: pointer;
     }
 
-    .footer {
-      margin-top: 50px;
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .day {
+      background: #fff;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      border: 2px solid transparent;
+      min-height: 50px;
+    }
+
+    .day:hover {
+      border-color: #ddd;
+    }
+
+    .eugenia  { background-color: var(--eugenia); color: white; }
+    .enrique  { background-color: var(--enrique); color: white; }
+    .ramon    { background-color: var(--ramon);   color: white; }
+    .malvina  { background-color: var(--malvina); color: white; }
+
+    .selected {
+      outline: 3px solid #000;
+    }
+
+    .info {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 1.1rem;
+    }
+
+    .day-name {
+      font-weight: bold;
       font-size: 0.9rem;
       text-align: center;
-      color: #aaa;
+      margin-bottom: 4px;
     }
   </style>
 </head>
 <body>
-  <h1>Turnos Semanales - Isla</h1>
-
-  <!-- Fechas asignadas especiales -->
-  <div class="semana eugenia">
-    <h3>Semana del 18 al 24 de Marzo</h3>
-    <p>22 al 24 – Eugenia</p>
+  <h1>Turnos Isla – 2025</h1>
+  <div class="nav">
+    <button onclick="prevMonth()">◀ Anterior</button>
+    <span id="monthLabel">Enero 2025</span>
+    <button onclick="nextMonth()">Siguiente ▶</button>
+  </div>
+  <div id="calendar">
+    <div class="month-grid" id="calendarGrid"></div>
+    <div class="info" id="infoBox">Seleccioná un día para ver a quién le corresponde</div>
   </div>
 
-  <div class="semana enrique">
-    <h3>Semana del 29 de Abril al 5 de Mayo</h3>
-    <p>1 al 4 – Enrique</p>
-  </div>
+  <script>
+    const calendarGrid = document.getElementById('calendarGrid');
+    const monthLabel = document.getElementById('monthLabel');
+    const infoBox = document.getElementById('infoBox');
 
-  <div class="semana ramon">
-    <h3>Semana del 10 al 16 de Junio</h3>
-    <p>14 al 16 – Ramón</p>
-  </div>
+    let currentMonth = 0; // Enero
+    const year = 2025;
 
-  <div class="semana malvina">
-    <h3>Semana del 16 al 22 de Junio</h3>
-    <p>20 al 22 – Malvina</p>
-  </div>
+    const personas = {
+      'Eugenia': '#9e85e4',
+      'Enrique': '#4caf50',
+      'Ramón': '#ff9800',
+      'Malvina': '#f76a6a'
+    };
 
-  <div class="semana eugenia">
-    <h3>Semana del 12 al 18 de Agosto</h3>
-    <p>15 al 17 – Eugenia</p>
-  </div>
+    // Datos simplificados de turnos (ejemplo)
+    const turnos = {
+      // formato: "YYYY-MM-DD": "Persona"
+      "2025-03-22": "Eugenia",
+      "2025-03-23": "Eugenia",
+      "2025-03-24": "Eugenia",
+      "2025-05-01": "Enrique",
+      "2025-05-02": "Enrique",
+      "2025-05-03": "Enrique",
+      "2025-05-04": "Enrique",
+      "2025-06-14": "Ramón",
+      "2025-06-15": "Ramón",
+      "2025-06-16": "Ramón",
+      "2025-06-20": "Malvina",
+      "2025-06-21": "Malvina",
+      "2025-06-22": "Malvina"
+      // Podés seguir agregando más fechas
+    };
 
-  <div class="semana enrique">
-    <h3>Semana del 18 al 24 de Noviembre</h3>
-    <p>21 al 24 – Enrique</p>
-  </div>
+    function renderCalendar() {
+      calendarGrid.innerHTML = '';
+      const date = new Date(year, currentMonth, 1);
+      const monthName = date.toLocaleString('es-ES', { month: 'long' });
+      monthLabel.textContent = `${capitalize(monthName)} ${year}`;
 
-  <div class="semana ramon">
-    <h3>Semana del 2 al 8 de Diciembre</h3>
-    <p>6 al 8 – Ramón</p>
-  </div>
+      const startDay = date.getDay(); // 0 Domingo, 1 Lunes...
+      const daysInMonth = new Date(year, currentMonth + 1, 0).getDate();
 
-  <!-- Ejemplo de semanas regulares -->
-  <div class="semana enrique">
-    <h3>Semana del 6 al 12 de Marzo</h3>
-    <p>8 al 9 – Enrique</p>
-  </div>
+      // Agregar los nombres de los días
+      ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].forEach(name => {
+        const dayName = document.createElement('div');
+        dayName.className = 'day-name';
+        dayName.textContent = name;
+        calendarGrid.appendChild(dayName);
+      });
 
-  <div class="semana ramon">
-    <h3>Semana del 13 al 19 de Marzo</h3>
-    <p>15 al 16 – Ramón</p>
-  </div>
+      // Ajuste para que el mes empiece correctamente (lunes)
+      let offset = (date.getDay() + 6) % 7;
 
-  <div class="semana eugenia">
-    <h3>Semana del 27 de Marzo al 2 de Abril</h3>
-    <p>29 al 30 – Eugenia</p>
-  </div>
+      for (let i = 0; i < offset; i++) {
+        const emptyCell = document.createElement('div');
+        calendarGrid.appendChild(emptyCell);
+      }
 
-  <div class="footer">Hecho con ❤️ por Ignacio – Isla Scheduler 2024</div>
+      for (let day = 1; day <= daysInMonth; day++) {
+        const fullDate = `${year}-${String(currentMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        const div = document.createElement('div');
+        div.className = 'day';
+        div.textContent = day;
+
+        if (turnos[fullDate]) {
+          const persona = turnos[fullDate];
+          div.classList.add(persona.toLowerCase());
+          div.dataset.persona = persona;
+        }
+
+        div.onclick = () => seleccionarPersona(fullDate);
+        calendarGrid.appendChild(div);
+      }
+    }
+
+    function seleccionarPersona(fecha) {
+      const persona = turnos[fecha];
+      if (!persona) {
+        infoBox.textContent = `El ${fecha} no tiene asignación.`;
+        return;
+      }
+
+      const dias = document.querySelectorAll('.day');
+      dias.forEach(d => {
+        if (d.dataset.persona === persona) {
+          d.classList.add('selected');
+        } else {
+          d.classList.remove('selected');
+        }
+      });
+
+      infoBox.textContent = `Turno para ${persona}`;
+    }
+
+    function nextMonth() {
+      if (currentMonth < 11) {
+        currentMonth++;
+        renderCalendar();
+      }
+    }
+
+    function prevMonth() {
+      if (currentMonth > 0) {
+        currentMonth--;
+        renderCalendar();
+      }
+    }
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    renderCalendar();
+  </script>
 </body>
 </html>
