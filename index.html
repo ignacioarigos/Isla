@@ -6,7 +6,7 @@
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f0f0f0;
+      background-color: #f5f5f5;
       color: #222;
       padding: 20px;
     }
@@ -163,7 +163,8 @@ function renderizarCalendario() {
         let inicio = new Date(asignacion.inicio);
         let fin = new Date(asignacion.fin);
 
-        if (bloque.nombre === "Bloque 2") {
+        // Solo extender rango si la fecha pertenece al bloque 2
+        if (bloque.nombre === "Bloque 2" && fecha >= inicio && fecha <= fin) {
           const rangoExtendido = extenderBloque2(inicio);
           inicio = rangoExtendido[0];
           fin = rangoExtendido[1];
@@ -194,9 +195,9 @@ function renderizarCalendario() {
 
     dia.textContent = d;
     calendario.appendChild(dia);
-    }
+  }
 
-  // Termina el bucle de los días
+  // Fin del renderizado
 }
 
 renderizarCalendario();
