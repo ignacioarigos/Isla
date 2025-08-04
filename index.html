@@ -141,31 +141,18 @@ let fechaActual = new Date(2025, 0);
 const minFecha = new Date(2025, 0);
 const maxFecha = new Date(2026, 2);
 
-dibujarMes(fechaActual);
-
-btnPrev.onclick = () => {
-  fechaActual.setMonth(fechaActual.getMonth() - 1);
-  if (fechaActual < minFecha) fechaActual = new Date(minFecha);
-  dibujarMes(fechaActual);
-};
-
-btnNext.onclick = () => {
-  fechaActual.setMonth(fechaActual.getMonth() + 1);
-  if (fechaActual > maxFecha) fechaActual = new Date(maxFecha);
-  dibujarMes(fechaActual);
-};
-
 function dibujarMes(fecha) {
   tbody.innerHTML = "";
   const año = fecha.getFullYear();
   const mes = fecha.getMonth();
   const primerDia = new Date(año, mes, 1);
-  const ultimoDia = new Date(año, mes + 1, 0);
-  const diaInicio = primerDia.getDay();
-  const diasEnMes = ultimoDia.getDate();
+  const diaInicio = (primerDia.getDay() + 6) % 7; // ajustar para que lunes sea primero si querés
+  const diasEnMes = new Date(año, mes + 1, 0).getDate();
 
   let fila = document.createElement("tr");
-  for (let i = 0; i < diaInicio; i++) fila.appendChild(document.createElement("td"));
+  for (let i = 0; i < diaInicio; i++) {
+    fila.appendChild(document.createElement("td"));
+  }
 
   for (let dia = 1; dia <= diasEnMes; dia++) {
     const celda = document.createElement("td");
@@ -174,20 +161,23 @@ function dibujarMes(fecha) {
     celda.dataset.fecha = fechaStr;
     celda.onclick = () => seleccionarFecha(fechaStr);
     fila.appendChild(celda);
+
     if ((dia + diaInicio) % 7 === 0) {
       tbody.appendChild(fila);
       fila = document.createElement("tr");
     }
   }
 
-  if (fila.hasChildNodes()) tbody.appendChild(fila);
+  if (fila.hasChildNodes()) {
+    tbody.appendChild(fila);
+  }
+
   const nombreMes = fecha.toLocaleString("es-ES", { month: "long" });
   mesActualElem.textContent = `${nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1)} ${año}`;
   actualizarBotones();
   limpiarColores();
   document.getElementById("asignado").textContent = "Seleccioná una fecha para ver la asignación";
 }
-
 function actualizarBotones
   function actualizarBotones() {
   btnPrev.disabled = fechaActual <= minFecha;
