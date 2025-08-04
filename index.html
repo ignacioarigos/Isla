@@ -96,7 +96,7 @@
     const year = 2025;
 
     const turnos = {
-      // Pegá acá todos los datos integrados: enero, febrero, fines de semana y asignaciones especiales
+      /* Se completa en el siguiente bloque */
     };
 
     function renderCalendar() {
@@ -105,7 +105,7 @@
       const monthName = date.toLocaleString('es-ES', { month: 'long' });
       monthLabel.textContent = `${capitalize(monthName)} ${year}`;
 
-      const startDay = new Date(year, currentMonth, 1).getDay();
+      const startDay = new Date(year, currentMonth, 1).getDay(); // 0 = domingo
       const daysInMonth = new Date(year, currentMonth + 1, 0).getDate();
 
       ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].forEach(name => {
