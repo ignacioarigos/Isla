@@ -102,20 +102,53 @@
     const calendarGrid = document.getElementById('calendarGrid');
     const monthLabel = document.getElementById('monthLabel');
     const infoBox = document.getElementById('infoBox');
-
     let currentMonth = 0;
     const year = 2025;
 
     const turnos = {
-      // ← ¡Aquí irán todas las fechas del 2025!
-      "2025-03-22": "Eugenia", "2025-03-23": "Eugenia", "2025-03-24": "Eugenia",
-      "2025-05-01": "Enrique", "2025-05-02": "Enrique", "2025-05-03": "Enrique", "2025-05-04": "Enrique",
-      "2025-06-14": "Ramón", "2025-06-15": "Ramón", "2025-06-16": "Ramón",
-      "2025-06-20": "Malvina", "2025-06-21": "Malvina", "2025-06-22": "Malvina",
-      "2025-08-15": "Eugenia", "2025-08-16": "Eugenia", "2025-08-17": "Eugenia",
-      "2025-11-21": "Enrique", "2025-11-22": "Enrique", "2025-11-23": "Enrique", "2025-11-24": "Enrique",
-      "2025-12-06": "Ramón", "2025-12-07": "Ramón", "2025-12-08": "Ramón"
-      // Podés agregar aquí todas las fechas rotativas jueves-viernes según tu esquema
+      // Fechas especiales
+      "2025-03-22":"Eugenia","2025-03-23":"Eugenia","2025-03-24":"Eugenia",
+      "2025-05-01":"Enrique","2025-05-02":"Enrique","2025-05-03":"Enrique","2025-05-04":"Enrique",
+      "2025-06-14":"Ramon","2025-06-15":"Ramon","2025-06-16":"Ramon",
+      "2025-06-20":"Malvina","2025-06-21":"Malvina","2025-06-22":"Malvina",
+      "2025-08-15":"Eugenia","2025-08-16":"Eugenia","2025-08-17":"Eugenia",
+      "2025-11-21":"Enrique","2025-11-22":"Enrique","2025-11-23":"Enrique","2025-11-24":"Enrique",
+      "2025-12-06":"Ramon","2025-12-07":"Ramon","2025-12-08":"Ramon",
+
+      // Turnos regulares jueves-viernes
+      "2025-03-08":"Enrique","2025-03-09":"Enrique",
+      "2025-03-15":"Ramon","2025-03-16":"Ramon",
+      "2025-03-29":"Eugenia","2025-03-30":"Eugenia",
+      "2025-04-05":"Malvina","2025-04-06":"Malvina",
+      "2025-04-12":"Enrique","2025-04-13":"Enrique",
+      "2025-04-19":"Ramon","2025-04-20":"Ramon",
+      "2025-04-26":"Eugenia","2025-04-27":"Eugenia",
+      "2025-05-10":"Malvina","2025-05-11":"Malvina",
+      "2025-05-17":"Enrique","2025-05-18":"Enrique",
+      "2025-05-24":"Ramon","2025-05-25":"Ramon",
+      "2025-05-31":"Eugenia","2025-06-01":"Eugenia",
+      "2025-06-07":"Malvina","2025-06-08":"Malvina",
+      "2025-06-28":"Enrique","2025-06-29":"Enrique",
+      "2025-07-05":"Ramon","2025-07-06":"Ramon",
+      "2025-07-12":"Eugenia","2025-07-13":"Eugenia",
+      "2025-08-09":"Malvina","2025-08-10":"Malvina",
+      "2025-08-23":"Enrique","2025-08-24":"Enrique",
+      "2025-08-30":"Ramon","2025-08-31":"Ramon",
+      "2025-09-06":"Eugenia","2025-09-07":"Eugenia",
+      "2025-09-13":"Malvina","2025-09-14":"Malvina",
+      "2025-09-20":"Enrique","2025-09-21":"Enrique",
+      "2025-09-27":"Ramon","2025-09-28":"Ramon",
+      "2025-10-04":"Eugenia","2025-10-05":"Eugenia",
+      "2025-10-11":"Malvina","2025-10-12":"Malvina",
+      "2025-10-18":"Enrique","2025-10-19":"Enrique",
+      "2025-10-25":"Ramon","2025-10-26":"Ramon",
+      "2025-11-01":"Eugenia","2025-11-02":"Eugenia",
+      "2025-11-08":"Malvina","2025-11-09":"Malvina",
+      "2025-11-15":"Enrique","2025-11-16":"Enrique",
+      "2025-11-29":"Ramon","2025-11-30":"Ramon",
+      "2025-12-13":"Eugenia","2025-12-14":"Eugenia",
+      "2025-12-20":"Malvina","2025-12-21":"Malvina",
+      "2025-12-27":"Enrique","2025-12-28":"Enrique"
     };
 
     function renderCalendar() {
@@ -170,11 +203,17 @@
     }
 
     function nextMonth() {
-      if (currentMonth < 11) { currentMonth++; renderCalendar(); }
+      if (currentMonth < 11) {
+        currentMonth++;
+        renderCalendar();
+      }
     }
 
     function prevMonth() {
-      if (currentMonth > 0) { currentMonth--; renderCalendar(); }
+      if (currentMonth > 0) {
+        currentMonth--;
+        renderCalendar();
+      }
     }
 
     function capitalize(str) {
